@@ -1543,6 +1543,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aht10_Sample", "Meadow.Foun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aht10_Desktop_Sample", "Meadow.Foundation.Peripherals\Sensors.Atmospheric.Ahtx0\Samples\Aht10_Desktop_Sample\Aht10_Desktop_Sample.csproj", "{C1AF868A-B1FF-4DE6-985B-07E2916A0325}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stepper.TMC2099", "Stepper.TMC2099", "{CDA79868-66D5-4A59-AD7C-991AA56E1A54}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motors.Stepper.TMC2099", "Meadow.Foundation.Peripherals\Motors.Stepper.TMC2099\Motors.Stepper.TMC2099.csproj", "{DD9613A5-266E-4C8B-8497-5ABE6771B851}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{EA34C7B2-D875-433E-B6DB-DDF99AF6B96B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3725,6 +3734,10 @@ Global
 		{C1AF868A-B1FF-4DE6-985B-07E2916A0325}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1AF868A-B1FF-4DE6-985B-07E2916A0325}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1AF868A-B1FF-4DE6-985B-07E2916A0325}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD9613A5-266E-4C8B-8497-5ABE6771B851}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD9613A5-266E-4C8B-8497-5ABE6771B851}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD9613A5-266E-4C8B-8497-5ABE6771B851}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD9613A5-266E-4C8B-8497-5ABE6771B851}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -4495,6 +4508,9 @@ Global
 		{E92014B1-100A-40A7-998F-CE712777FE02} = {F93B0027-D970-47A2-8D97-F132AE1BE609}
 		{EA7B5437-D3CD-4996-9DB7-09E6DCB1D6EA} = {AE9AD583-1709-434D-9C7E-FE776B2005F0}
 		{C1AF868A-B1FF-4DE6-985B-07E2916A0325} = {AE9AD583-1709-434D-9C7E-FE776B2005F0}
+		{CDA79868-66D5-4A59-AD7C-991AA56E1A54} = {2486B48D-D4A2-4505-BF50-F33B2E15DA97}
+		{DD9613A5-266E-4C8B-8497-5ABE6771B851} = {CDA79868-66D5-4A59-AD7C-991AA56E1A54}
+		{EA34C7B2-D875-433E-B6DB-DDF99AF6B96B} = {CDA79868-66D5-4A59-AD7C-991AA56E1A54}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF7CA16F-8C38-4546-87A2-5DAAF58A1520}
