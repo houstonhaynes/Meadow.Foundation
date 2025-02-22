@@ -22,7 +22,22 @@ namespace Meadow.Foundation.Sensors.Weather
         /// <summary>
         /// Time to wait if no events come in to register a zero speed wind
         /// </summary>
+        /// <remarks>
+        /// This value determines the minimum wind speed that can be measured.
+        /// i.e. minimum speed is KmhPerSwitchPerSecond / NoWindTimeout(seconds)
+        /// e.g. (2.4 km/hr/s) / (4s) = 600 m/s 
+        /// <see cref="KmhPerSwitchPerSecond"/>
+        /// </remarks>
         public TimeSpan NoWindTimeout { get; set; } = TimeSpan.FromSeconds(4);
+
+        /// <summary>
+        /// Define the theoretical maximum speed that can be measured. Higher speeds are ignored. 
+        /// </summary>
+        /// <remarks>
+        /// Category 5 Hurricane is > 300 km/hr. 
+        /// </remarks>
+        public Speed? MaxSpeed { get; set; } = new Speed(500, SU.KilometersPerHour);
+
 
         /// <summary>
         /// Time to capture samples for a one time Read if IsSampling is false
@@ -49,11 +64,11 @@ namespace Meadow.Foundation.Sensors.Weather
         /// once per second. Used to calculate the wind speed based on the time
         /// duration between switch events. Default is `2.4kmh`.
         /// </summary>
-        public float KmhPerSwitchPerSecond { get; set; } = 2.4f;
+        public double KmhPerSwitchPerSecond { get; set; } = 2.4;
 
         private readonly IDigitalInterruptPort inputPort;
         private bool running = false;
-        private readonly Queue<DigitalPortResult>? samples;
+        private readonly Queue<DigitalPortResult> samples = new();
 
         /// <summary>
         /// Is the object disposed
@@ -70,6 +85,10 @@ namespace Meadow.Foundation.Sensors.Weather
         /// on the device.
         /// </summary>
         /// <param name="digitalInputPin"></param>
+        /// <remarks>
+        /// Debounce will limit upper speed to approximately half of (2.4/0.002) = 1200 km/hr.
+        /// i.e. +/- 600 km/hr assuming events can be raised that quickly. 
+        /// </remarks>
         public SwitchingAnemometer(IPin digitalInputPin)
             : this(digitalInputPin.CreateDigitalInterruptPort(InterruptMode.EdgeFalling,
                                                             ResistorMode.InternalPullUp,
@@ -86,8 +105,6 @@ namespace Meadow.Foundation.Sensors.Weather
         public SwitchingAnemometer(IDigitalInterruptPort inputPort)
         {
             this.inputPort = inputPort;
-
-            samples = new Queue<DigitalPortResult>();
         }
 
         private void SubscribeToInputPortEvents() => inputPort.Changed += HandleInputPortChange;
@@ -98,11 +115,14 @@ namespace Meadow.Foundation.Sensors.Weather
         {
             if (!running) { return; }
 
-            samples?.Enqueue(result);
-
-            if (samples?.Count > sampleCount)
+            lock (samples)
             {
-                samples.Dequeue();
+                samples?.Enqueue(result);
+
+                if (samples?.Count > sampleCount)
+                {
+                    samples.Dequeue();
+                }
             }
         }
 
@@ -152,28 +172,48 @@ namespace Meadow.Foundation.Sensors.Weather
                 StopUpdating();
             }
 
-            if (samples?.Count > 0 && (DateTime.UtcNow - samples?.Peek().New.Time > NoWindTimeout))
-            {   //we've exceeded the no wind interval time 
-                samples?.Clear(); //will force a zero reading
-            }
-            // if we've reached our sample count
-            else if (samples?.Count >= SampleCount)
+            lock (samples)
             {
-                float speedSum = 0f;
+                int count = 0;
 
-                // sum up the speeds
-                foreach (var sample in samples)
-                {   // skip the first (old will be null)
-                    if (sample.Old is { } old)
-                    {
-                        speedSum += SwitchIntervalToKmh(sample.New.Time - old.Time);
-                    }
+                if (samples?.Count > 0 && samples?.Peek().Delta > NoWindTimeout)
+                {   //we've exceeded the no wind interval time 
+                    samples?.Clear(); //will force a zero reading
+                    return new Speed(0);
                 }
 
-                // average the speeds
-                float oversampledSpeed = speedSum / (samples.Count - 1);
+                // do we have enough samples to calculate a result?
+                if (samples?.Count >= SampleCount)
+                {
+                    double speedSum = 0f;
 
-                return new Speed(oversampledSpeed, SU.KilometersPerHour);
+                    // sum up the speeds
+                    foreach (var sample in samples)
+                    {
+                        // Check delta is not null and reasonable. (0 ms would be infinite speed. What is a reasonable maximum speed?)
+                        if (sample.Delta is { Milliseconds: > 0 } delta)
+                        {
+                            double speed = SwitchIntervalToKmh(delta);
+
+                            // skip speeds that are unreasonably high
+                            if (MaxSpeed?.KilometersPerHour >= speed)
+                            {
+                                speedSum += speed;
+                                count++;
+
+                                //Resolver.Log.Info($"count {count} : delta={delta} speed={speed:N4} speedSum={speedSum:N4} sample={sample} ");
+                            }
+                        }
+                    }
+
+                    // do we have enough samples to report an observation?
+                    if (count >= SampleCount)
+                    {
+                        // average the speeds
+                        double oversampledSpeed = speedSum / count;
+                        return new Speed(oversampledSpeed, SU.KilometersPerHour);
+                    }
+                }
             }
 
             //otherwise return 0 speed
@@ -185,9 +225,9 @@ namespace Meadow.Foundation.Sensors.Weather
         /// </summary>
         /// <param name="interval">The interval between signals</param>
         /// <returns></returns>
-        protected float SwitchIntervalToKmh(TimeSpan interval)
+        protected double SwitchIntervalToKmh(TimeSpan interval)
         {
-            return KmhPerSwitchPerSecond / (float)interval.TotalSeconds;
+            return KmhPerSwitchPerSecond / (double)interval.TotalSeconds;
         }
 
         ///<inheritdoc/>

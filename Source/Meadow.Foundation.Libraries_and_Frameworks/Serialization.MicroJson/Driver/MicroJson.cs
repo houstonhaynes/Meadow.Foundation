@@ -11,6 +11,11 @@ namespace Meadow.Foundation.Serialization;
 /// </summary>
 public static partial class MicroJson
 {
+    private static string[] ExplicitlyUnsupportedTypes =
+    {
+        "System.Text.Json.JsonElement"
+    };
+
     /// <summary>
     /// Desrializes a Json string into an object.
     /// </summary>
@@ -29,6 +34,32 @@ public static partial class MicroJson
     public static object? DeserializeString(string json)
     {
         return Parser.JsonDecode(json);
+    }
+
+    /// <summary>
+    /// Escapes special characters in a string to ensure it is JSON-compliant.
+    /// </summary>
+    /// <param name="value">The string to escape.</param>
+    /// <returns>The escaped string with special characters properly encoded.</returns>
+    /// <remarks>
+    /// This method handles the following special characters:
+    /// - Double quotes (") are escaped as \".
+    /// - Backslashes (\) are escaped as \\.
+    /// - Newlines (\n) are escaped as \\n.
+    /// - Carriage returns (\r) are escaped as \\r.
+    /// - Tabs (\t) are escaped as \\t.
+    /// - Backspaces (\b) are escaped as \\b.
+    /// - Form feeds (\f) are escaped as \\f.
+    /// </remarks>
+    public static string EscapeString(string value)
+    {
+        return "\"" + value.Replace("\\", "\\\\")
+                        .Replace("\"", "\\\"")
+                        .Replace("\n", "\\n")
+                        .Replace("\r", "\\r")
+                        .Replace("\t", "\\t")
+                        .Replace("\b", "\\b")
+                        .Replace("\f", "\\f") + "\"";
     }
 
     /// <summary>
@@ -59,11 +90,9 @@ public static partial class MicroJson
             case TypeCode.Boolean:
                 return (bool)o ? "true" : "false";
             case TypeCode.String:
-                return $"\"{o}\""
-                    .Replace("\n", "\\n")
-                    .Replace("\r", "\\r");
+                return EscapeString((string)o);
             case TypeCode.Char:
-                return $"\"{o}\"";
+                return EscapeString(o.ToString());
             case TypeCode.Single:
             case TypeCode.Double:
             case TypeCode.Decimal:
@@ -75,7 +104,14 @@ public static partial class MicroJson
             case TypeCode.UInt32:
             case TypeCode.Int64:
             case TypeCode.UInt64:
-                return o.ToString();
+                if (o is IFormattable formattable)
+                {
+                    return formattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    return o.ToString();
+                }
             case TypeCode.DateTime:
                 return dateTimeFormat switch
                 {
@@ -91,7 +127,7 @@ public static partial class MicroJson
                         _ => $"\"{DateTimeConverters.ToIso8601((DateTimeOffset)o)}\"",
                     };
                 }
-                if (type == typeof(Guid))
+                if (type == typeof(Guid) || type == typeof(TimeSpan))
                 {
                     return $"\"{o}\"";
                 }
@@ -121,8 +157,9 @@ public static partial class MicroJson
             return SerializeIDictionary(hashtable, dateTimeFormat);
         }
 
-        if (type.IsClass)
+        if (type.IsClass || type.IsValueType && !ExplicitlyUnsupportedTypes.Any(e => e == type.FullName))
         {
+
             var hashtable = new Hashtable();
 
             // Use PropertyInfo instead of MethodInfo for better performance
@@ -133,9 +170,14 @@ public static partial class MicroJson
             foreach (PropertyInfo property in properties)
             {
                 object returnObject = property.GetValue(o);
-                var name = convertNamesToCamelCase
-                    ? char.ToLowerInvariant(property.Name[0]) + property.Name[1..]
-                    : property.Name;
+
+                var mappedName = property.GetCustomAttribute<JsonPropertyNameAttribute>(true);
+
+                var name = mappedName != null
+                    ? mappedName.PropertyName
+                    : convertNamesToCamelCase
+                        ? char.ToLowerInvariant(property.Name[0]) + property.Name[1..]
+                        : property.Name;
 
                 // camel case the name
                 hashtable.Add(name, returnObject);

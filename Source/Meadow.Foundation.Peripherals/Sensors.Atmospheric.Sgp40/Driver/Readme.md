@@ -42,11 +42,7 @@ public override Task Initialize()
         {
             Resolver.Log.Info($"Observer: VOC changed by threshold; new index: {result.New}");
         },
-        filter: result =>
-        {
-            return Math.Abs(result.New - result.Old ?? 0) > 10;
-        }
-    );
+        filter: result => Math.Abs(result.New - result.Old ?? 0) > 10);
     sensor.Subscribe(consumer);
 
     sensor.Updated += (sender, result) =>

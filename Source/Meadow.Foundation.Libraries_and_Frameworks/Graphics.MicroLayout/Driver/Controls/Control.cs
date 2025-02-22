@@ -10,6 +10,7 @@ public abstract class Control : IControl
     private int _width;
     private int _height;
     private bool _isVisible = true;
+    private IControl? _parent;
 
     /// <summary>
     /// Gets or sets a value indicating whether the control needs to be redrawn.
@@ -22,7 +23,18 @@ public abstract class Control : IControl
     public object? Context { get; set; }
 
     /// <inheritdoc/>
-    public virtual IControl? Parent { get; set; }
+    public virtual IControl? Parent
+    {
+        get => _parent;
+        set
+        {
+            _parent = value;
+            if (_parent != null && _parent is not DisplayScreen)
+            {
+                IsVisible = _parent.IsVisible;
+            }
+        }
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Control"/> class with the specified dimensions.
@@ -72,7 +84,7 @@ public abstract class Control : IControl
     /// </summary>
     public virtual bool IsVisible
     {
-        get => _isVisible;
+        get => (_isVisible == false || _parent?.IsVisible == false) ? false : true;
         set => SetInvalidatingProperty(ref _isVisible, value);
     }
 
