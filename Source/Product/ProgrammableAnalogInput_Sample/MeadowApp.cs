@@ -26,14 +26,15 @@ namespace ProgrammableAnalogInput_Sample
         public override async Task Run()
         {
             Resolver.Log.Info("Run...");
-            module.ConfigureChannel(0, ProgrammableAnalogInputModule.ChannelType.Voltage_0_10);
-            module.ConfigureChannel(1, ProgrammableAnalogInputModule.ChannelType.Voltage_0_10);
+            module.ConfigureChannel(0, ProgrammableAnalogInputModule.ChannelType.ThermistorNtc);
+            //            module.ConfigureChannel(1, ProgrammableAnalogInputModule.ChannelType.Voltage_0_10);
             while (true)
             {
-                var ch0 = module.Read0_10V(0);
-                var ch1 = module.Read0_10V(1);
+                //var ch0 = module.Read0_10V(0);
+                //var ch1 = module.Read0_10V(1);
 
-                Resolver.Log.Info($"CH0: {ch0.Volts:N3}");
+                var t0 = module.ReadNtc(0);
+                Resolver.Log.Info($"CH0: {t0.Fahrenheit:N1}");
                 //                Resolver.Log.Info($"CH1: {ch1.Volts:N3}");
 
                 await Task.Delay(1000);

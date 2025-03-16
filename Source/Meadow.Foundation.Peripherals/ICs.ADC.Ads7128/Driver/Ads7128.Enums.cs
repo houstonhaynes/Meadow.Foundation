@@ -77,15 +77,54 @@ public partial class Ads7128
         BlockWrite = 0b0010_1000
     }
 
+    /// <summary>
+    /// Specifies the oversampling configuration options for the ADC.
+    /// </summary>
+    /// <remarks>
+    /// Oversampling improves the signal-to-noise ratio by taking multiple samples and averaging them.
+    /// Higher oversampling values provide better noise reduction but increase conversion time.
+    /// The values correspond to the hardware register bits that configure the oversampling setting.
+    /// </remarks>
     public enum Oversampling : byte
     {
+        /// <summary>
+        /// No oversampling, single sample (000).
+        /// </summary>
         Samples_1 = 0b000,
+
+        /// <summary>
+        /// 2x oversampling (001).
+        /// </summary>
         Samples_2 = 0b001,
+
+        /// <summary>
+        /// 4x oversampling (010).
+        /// </summary>
         Samples_4 = 0b010,
+
+        /// <summary>
+        /// 8x oversampling (011).
+        /// </summary>
         Samples_8 = 0b011,
+
+        /// <summary>
+        /// 16x oversampling (100).
+        /// </summary>
         Samples_16 = 0b100,
+
+        /// <summary>
+        /// 32x oversampling (101).
+        /// </summary>
         Samples_32 = 0b101,
+
+        /// <summary>
+        /// 64x oversampling (110).
+        /// </summary>
         Samples_64 = 0b110,
+
+        /// <summary>
+        /// 128x oversampling (111).
+        /// </summary>
         Samples_128 = 0b111,
     }
 

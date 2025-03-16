@@ -5,13 +5,48 @@ using System.Collections.Concurrent;
 
 namespace Meadow.Foundation.ICs.ADC;
 
+/// <summary>
+/// Controller for the ADS7128 analog-to-digital converter chip that supports individual analog input control
+/// and array-based analog input operations.
+/// </summary>
+/// <remarks>
+/// The ADS7128 is a 12-bit precision ADC that communicates via I2C bus and supports multiple input channels.
+/// </remarks>
 public partial class Ads7128 : IPinController, IAnalogInputController, IAnalogInputArrayController
 {
+    /// <summary>
+    /// The precision of the ADC in bits.
+    /// </summary>
     public const byte ADCPrecisionBits = 12;
 
+    /// <summary>
+    /// Gets the pin definitions for this ADC controller.
+    /// </summary>
     public PinDefinitions Pins { get; }
-    public Oversampling CurrrentOversampling { get; }
+
+    /// <summary>
+    /// Gets the reference voltage used by the ADC for conversions.
+    /// </summary>
     public Voltage ReferenceVoltage => vRef;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Ads7128"/> class.
+    /// </summary>
+    /// <param name="i2cBus">The I2C bus used to communicate with the ADC.</param>
+    /// <param name="address">The I2C address of the ADC device.</param>
+    public Ads7128(II2cBus i2cBus,
+        Addresses address)
+    {
+        _i2cBus = i2cBus;
+        _busAddress = address;
+
+        Pins = new PinDefinitions(this)
+        {
+            Controller = this
+        };
+
+        Initialize();
+    }
 
     /// <summary>
     /// The default I2C address for the peripheral
@@ -23,17 +58,30 @@ public partial class Ads7128 : IPinController, IAnalogInputController, IAnalogIn
     private Mode _currentMode = Mode.NotSet;
     internal object _syncRoot = new();
     private Voltage vRef = 3.3.Volts();
+    private Oversampling _oversampling;
 
-    public Ads7128(II2cBus i2cBus,
-        Addresses address)
+    private void Initialize()
     {
-        _i2cBus = i2cBus;
-        _busAddress = address;
+        _oversampling = GetOversampling();
+    }
 
-        Pins = new PinDefinitions(this)
+    /// <summary>
+    /// Gets or sets the current oversampling configuration for the ADC.
+    /// </summary>
+    /// <remarks>
+    /// Oversampling improves measurement precision by taking multiple samples and averaging the results,
+    /// reducing noise in the analog readings. Higher oversampling values provide better noise reduction
+    /// at the cost of increased conversion time.
+    /// </remarks>
+    public Oversampling CurrrentOversampling
+    {
+        get => _oversampling;
+        set
         {
-            Controller = this
-        };
+            if (value == CurrrentOversampling) return;
+            SetOversampling(value);
+            _oversampling = GetOversampling();
+        }
     }
 
     private Status ReadStatus()
@@ -128,6 +176,7 @@ public partial class Ads7128 : IPinController, IAnalogInputController, IAnalogIn
         _inputCache.TryRemove(pin, out _);
     }
 
+    /// <inheritdoc/>
     public IAnalogInputPort CreateAnalogInputPort(IPin pin, Voltage? voltageReference = null)
     {
         switch (_currentMode)
@@ -151,6 +200,7 @@ public partial class Ads7128 : IPinController, IAnalogInputController, IAnalogIn
         return port;
     }
 
+    /// <inheritdoc/>
     public IAnalogInputArray CreateAnalogInputArray(params IPin[] pins)
     {
         switch (_currentMode)

@@ -191,6 +191,8 @@ public partial class ProgrammableAnalogInputModule
 
         var raw = analogInputs[channelNumber].Read().GetAwaiter().GetResult();
 
+        Resolver.Log.Info($"RAW: {raw.Volts}  REF: {adc.ReferenceVoltage.Volts}");
+
         if (raw >= adc.ReferenceVoltage)
         {
             throw new Exception("ADC is saturated");

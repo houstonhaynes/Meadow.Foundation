@@ -6,19 +6,16 @@ namespace Meadow.Foundation.ICs.ADC;
 
 public partial class Ads7128
 {
-    public class Ads7128Pin : Pin
-    {
-        internal byte Index => (byte)Key;
-
-        internal Ads7128Pin(Ads7128? controller, string name, object key, IList<IChannelInfo>? supportedChannels)
-            : base(controller, name, key, supportedChannels)
-        {
-        }
-    }
-
+    /// <summary>
+    /// Provides definitions for all pins available on the ADS7128 ADC.
+    /// </summary>
+    /// <remarks>
+    /// This class contains properties representing each physical pin on the ADS7128 and 
+    /// implements the IPinDefinitions interface to make pins accessible to the system.
+    /// </remarks>
     public class PinDefinitions : IPinDefinitions
     {
-        private Ads7128 controller;
+        private readonly Ads7128 controller;
 
         /// <summary>
         /// Collection of pins
@@ -41,6 +38,9 @@ public partial class Ads7128
             InitAllPins();
         }
 
+        /// <summary>
+        /// Gets the Analog Input 0 pin.
+        /// </summary>
         public IPin AIN0 => new Ads7128Pin(
             controller,
             "AIN0",
@@ -51,6 +51,9 @@ public partial class Ads7128
             }
         );
 
+        /// <summary>
+        /// Gets the Analog Input 1 pin.
+        /// </summary>
         public IPin AIN1 => new Ads7128Pin(
             controller,
             "AIN1",
@@ -61,6 +64,9 @@ public partial class Ads7128
             }
         );
 
+        /// <summary>
+        /// Gets the Analog Input 2 pin.
+        /// </summary>
         public IPin AIN2 => new Ads7128Pin(
             controller,
             "AIN2",
@@ -71,6 +77,9 @@ public partial class Ads7128
             }
         );
 
+        /// <summary>
+        /// Gets the Analog Input 3 pin.
+        /// </summary>
         public IPin AIN3 => new Ads7128Pin(
             controller,
             "AIN3",
@@ -81,6 +90,9 @@ public partial class Ads7128
             }
         );
 
+        /// <summary>
+        /// Gets the Analog Input 4 pin.
+        /// </summary>
         public IPin AIN4 => new Ads7128Pin(
             controller,
             "AIN4",
@@ -91,6 +103,9 @@ public partial class Ads7128
             }
         );
 
+        /// <summary>
+        /// Gets the Analog Input 5 pin.
+        /// </summary>
         public IPin AIN5 => new Ads7128Pin(
             controller,
             "AIN5",
@@ -101,6 +116,9 @@ public partial class Ads7128
             }
         );
 
+        /// <summary>
+        /// Gets the Analog Input 6 pin.
+        /// </summary>
         public IPin AIN6 => new Ads7128Pin(
             controller,
             "AIN6",
@@ -111,6 +129,9 @@ public partial class Ads7128
             }
         );
 
+        /// <summary>
+        /// Gets the Analog Input 7 pin.
+        /// </summary>
         public IPin AIN7 => new Ads7128Pin(
             controller,
             "AIN7",
