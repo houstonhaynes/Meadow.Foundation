@@ -44,6 +44,11 @@ public class GridLayout : MicroLayout
     private readonly Dictionary<IControl, (int row, int col, int rowspan, int colspan, Alignment alignment)> _controlPositions = new();
 
     /// <summary>
+    /// Gets or sets the padding (or indentation) of all controls from all 4 edges.
+    /// </summary>
+    public int Padding { get; set; } = 0;
+
+    /// <summary>
     /// Gets or sets the spacing between rows.
     /// </summary>
     public int RowSpacing
@@ -133,12 +138,12 @@ public class GridLayout : MicroLayout
     /// </summary>
     private void SetControlPosition(IControl control, int row, int col, int rowspan, int colspan, Alignment alignment)
     {
-        int cellWidth = (Width - (_columns - 1) * ColumnSpacing) / _columns;
-        int cellHeight = (Height - (_rows - 1) * RowSpacing) / _rows;
+        int cellWidth = (Width - 2 * Padding - (_columns - 1) * ColumnSpacing) / _columns;
+        int cellHeight = (Height - 2 * Padding - (_rows - 1) * RowSpacing) / _rows;
         int totalWidth = cellWidth * colspan + ColumnSpacing * (colspan - 1);
         int totalHeight = cellHeight * rowspan + RowSpacing * (rowspan - 1);
-        int cellLeft = Left + col * (cellWidth + ColumnSpacing);
-        int cellTop = Top + row * (cellHeight + RowSpacing);
+        int cellLeft = Left + Padding + col * (cellWidth + ColumnSpacing);
+        int cellTop = Top + Padding + row * (cellHeight + RowSpacing);
 
         switch (alignment)
         {
