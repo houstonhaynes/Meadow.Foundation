@@ -46,7 +46,17 @@ public class GridLayout : MicroLayout
     /// <summary>
     /// Gets or sets the padding (or indentation) of all controls from all 4 edges.
     /// </summary>
-    public int Padding { get; set; } = 0;
+    public int Padding
+    {
+        get => _padding;
+        set
+        {
+            _padding = value;
+            LayoutControls();
+            Invalidate();
+        }
+    }
+    private int _padding = 0;
 
     /// <summary>
     /// Gets or sets the spacing between rows.
