@@ -15,7 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\Meadow.Core\Source\implementations\f7\Meadow.F7\Meadow.F7.csproj" />
     <ProjectReference Include="..\..\Driver\Displays.TftSpi.csproj" />
-    <PackageReference Include="SimpleJpegDecoder" Version="0.4.0" />
+    <PackageReference Include="SimpleJpegDecoder" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="meadow-logo.jpg">
