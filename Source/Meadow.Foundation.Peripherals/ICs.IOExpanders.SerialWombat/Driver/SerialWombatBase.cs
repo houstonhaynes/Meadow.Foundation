@@ -471,6 +471,18 @@ namespace Meadow.Foundation.ICs.IOExpanders
             return new AnalogInputPort(this, pin, channel, sampleCount);
         }
 
+        /// <summary>
+        /// Create an analog input port for a pin
+        /// </summary>
+        public IAnalogInputPort CreateAnalogInputPort(IPin pin, Voltage? voltageReference)
+        {
+            var channel = pin.SupportedChannels.OfType<IAnalogChannelInfo>().FirstOrDefault();
+
+            if (channel == null) { throw new NotSupportedException($"Pin {pin.Name} Does not support ADC"); }
+
+            return new AnalogInputPort(this, pin, channel, 1);
+        }
+
         ///<inheritdoc/>
         public IAnalogInputArray CreateAnalogInputArray(params IPin[] pins)
         {
