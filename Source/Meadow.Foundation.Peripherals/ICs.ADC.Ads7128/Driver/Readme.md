@@ -1,8 +1,8 @@
-# Meadow.Foundation.ICs.ADC.Ads1x15
+# Meadow.Foundation.ICs.ADC.Ads7128
 
-**TI ADS1x15 I2C analog to digital converters (ADS1015 / ADS1115)**
+**TI ADS7128 I2C analog to digital converter**
 
-The **Ads1x15** library is included in the **Meadow.Foundation.ICs.ADC.Ads1x15** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
+The **Ads7128** library is included in the **Meadow.Foundation.ICs.ADC.Ads7128** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
 
 This driver is part of the [Meadow.Foundation](https://developer.wildernesslabs.co/Meadow/Meadow.Foundation/) peripherals library, an open-source repository of drivers and libraries that streamline and simplify adding hardware to your C# .NET Meadow IoT applications.
 
@@ -14,7 +14,39 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 
 You can install the library from within Visual studio using the the NuGet Package Manager or from the command line using the .NET CLI:
 
-`dotnet add package Meadow.Foundation.ICs.ADC.Ads1x15`
+`dotnet add package Meadow.Foundation.ICs.ADC.Ads7128`
+## Usage
+
+```csharp
+private Ads7128 adc;
+private IAnalogInputPort ch0;
+
+public override async Task Initialize()
+{
+    Resolver.Log.Info("Initialize...");
+
+    var bus = Device.CreateI2cBus();
+
+    adc = new Ads7128(
+        bus,
+        Ads7128.Addresses.Default);
+
+    ch0 = adc.CreateAnalogInputPort(adc.Pins.AIN0);
+}
+
+public override async Task Run()
+{
+    while (true)
+    {
+        var voltage = await ch0.Read();
+
+        Resolver.Log.Info($"AIN0 voltage: {voltage.Volts:N2}");
+
+        await Task.Delay(2000);
+    }
+}
+
+```
 ## How to Contribute
 
 - **Found a bug?** [Report an issue](https://github.com/WildernessLabs/Meadow_Issues/issues)
