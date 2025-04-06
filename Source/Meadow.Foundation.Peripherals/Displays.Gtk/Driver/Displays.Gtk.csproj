@@ -23,7 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".\Readme.md" Pack="true" PackagePath="" />
-    <PackageReference Include="GtkSharp" Version="3.24.24.*" />
+    <PackageReference Include="GtkSharp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\icon.png" Link="icon.png" Pack="true" PackagePath="" />

@@ -13,7 +13,7 @@
     <EmbeddedResource Include="maple.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SimpleJpegDecoder" Version="0.4.0" />
+    <PackageReference Include="SimpleJpegDecoder" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Meadow.Foundation.Libraries_and_Frameworks\Graphics.MicroGraphics\Driver\Graphics.MicroGraphics.csproj" />
