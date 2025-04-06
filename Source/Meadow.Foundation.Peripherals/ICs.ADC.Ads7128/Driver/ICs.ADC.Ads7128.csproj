@@ -18,6 +18,7 @@
     <PackageTags>Meadow.Foundation,ADC,analog,digital,converter,TI,ADS7128</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>TI ADS7128 I2C analog to digital converter</Description>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <None Include=".\Readme.md" Pack="true" PackagePath="" />

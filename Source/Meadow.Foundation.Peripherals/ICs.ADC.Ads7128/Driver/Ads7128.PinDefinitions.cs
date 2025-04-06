@@ -155,6 +155,7 @@ public partial class Ads7128
             AllPins.Add(AIN7);
         }
 
+        /// <inheritdoc/>
         public IEnumerator<IPin> GetEnumerator() => AllPins.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
