@@ -7,32 +7,6 @@ using System;
 
 namespace Meadow.Foundation;
 
-public enum ConfigurableAnalogInputChannelType
-{
-    Voltage_0_10,
-    Current_4_20,
-    ThermistorNtc
-}
-
-public class ChannelConfig
-{
-    public ConfigurableAnalogInputChannelType ChannelType { get; set; }
-    public double Scale { get; set; } = 1.0;
-    public double Offset { get; set; } = 0.0;
-    public string UnitType { get; set; } // TODO: make this an IUnit
-}
-
-public interface IProgrammableAnalogInputModule
-{
-    int ChannelCount { get; }
-    void ConfigureChannel(int channelNumber, ChannelConfig channelConfiguration);
-    Voltage ReadChannelRaw(int channelNumber);
-    Voltage Read0_10V(int channelNumber);
-    Current Read4_20mA(int channelNumber);
-    Temperature ReadNtc(int channelNumber, double beta, Temperature referenceTemperature, Resistance resistanceAtRefTemp);
-    object ReadChannelAsConfiguredUnit(int channelNumber);
-}
-
 public partial class ProgrammableAnalogInputModule : IProgrammableAnalogInputModule
 {
     public int ChannelCount { get; } = 8;
