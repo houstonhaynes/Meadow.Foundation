@@ -1,24 +1,4 @@
-﻿using System;
-
-namespace Meadow.Foundation.VFDs.FranklinElectric;
-
-[Flags]
-public enum OperationalStatus
-{
-    RunOff_StopOn = 0,
-    RunBlink_StopOn = 1,
-    RunOn_StopBlink = 2,
-    RunOn_StopOff = 3,
-    JogActive = 4,
-
-}
-
-public enum ErrorCodes
-{
-    OutputPhaseUMissing = 82,
-    OutputPhaseVMissing = 83,
-    OutputPhaseWMissing = 84,
-}
+﻿namespace Meadow.Foundation.VFDs.FranklinElectric;
 
 internal enum Registers
 {
