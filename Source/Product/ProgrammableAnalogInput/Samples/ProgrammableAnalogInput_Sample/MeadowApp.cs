@@ -26,7 +26,7 @@ namespace ProgrammableAnalogInput_Sample
         public override async Task Run()
         {
             Resolver.Log.Info("Run...");
-            module.ConfigureChannel(0, ProgrammableAnalogInputModule.ChannelType.ThermistorNtc);
+            //            module.ConfigureChannel(0, ProgrammableAnalogInputModule.ChannelType.ThermistorNtc);
             //            module.ConfigureChannel(1, ProgrammableAnalogInputModule.ChannelType.Voltage_0_10);
             while (true)
             {

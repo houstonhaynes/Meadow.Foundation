@@ -1,4 +1,5 @@
-﻿using Meadow.Foundation.ICs.ADC;
+﻿using Meadow.Common;
+using Meadow.Foundation.ICs.ADC;
 using Meadow.Foundation.ICs.IOExpanders;
 using Meadow.Hardware;
 using Meadow.Units;
@@ -6,24 +7,44 @@ using System;
 
 namespace Meadow.Foundation;
 
-public partial class ProgrammableAnalogInputModule
+public enum ConfigurableAnalogInputChannelType
 {
-    public const int ChannelCount = 8;
-    private readonly Resistance NtcFixedResistor = 10_000.Ohms();
+    Voltage_0_10,
+    Current_4_20,
+    ThermistorNtc
+}
 
-    public enum ChannelType
-    {
-        Voltage_0_10,
-        Current_4_20,
-        ThermistorNtc
-    }
+public class ChannelConfig
+{
+    public ConfigurableAnalogInputChannelType ChannelType { get; set; }
+    public double Scale { get; set; } = 1.0;
+    public double Offset { get; set; } = 0.0;
+    public string UnitType { get; set; } // TODO: make this an IUnit
+}
+
+public interface IProgrammableAnalogInputModule
+{
+    int ChannelCount { get; }
+    void ConfigureChannel(int channelNumber, ChannelConfig channelConfiguration);
+    Voltage ReadChannelRaw(int channelNumber);
+    Voltage Read0_10V(int channelNumber);
+    Current Read4_20mA(int channelNumber);
+    Temperature ReadNtc(int channelNumber, double beta, Temperature referenceTemperature, Resistance resistanceAtRefTemp);
+    object ReadChannelAsConfiguredUnit(int channelNumber);
+}
+
+public partial class ProgrammableAnalogInputModule : IProgrammableAnalogInputModule
+{
+    public int ChannelCount { get; } = 8;
+
+    private readonly Resistance NtcFixedResistor = 10_000.Ohms();
 
     private readonly Ads7128 adc;
     private readonly Pcf8575 pcf1;
     private readonly Pcf8575 pcf2;
-    private readonly ChannelType[] channelConfigs = new ChannelType[ChannelCount];
-    private readonly IDigitalOutputPort[] configBits = new IDigitalOutputPort[ChannelCount * 4];
-    private readonly IAnalogInputPort[] analogInputs = new IAnalogInputPort[ChannelCount];
+    private readonly ChannelConfig[] channelConfigs;
+    private readonly IDigitalOutputPort[] configBits;
+    private readonly IAnalogInputPort[] analogInputs;
 
     public ProgrammableAnalogInputModule(
         II2cBus bus,
@@ -31,6 +52,10 @@ public partial class ProgrammableAnalogInputModule
         byte gpio1Address,
         byte gpio2Address)
     {
+        channelConfigs = new ChannelConfig[ChannelCount];
+        configBits = new IDigitalOutputPort[ChannelCount * 4];
+        analogInputs = new IAnalogInputPort[ChannelCount];
+
         pcf1 = new Pcf8575(bus, gpio1Address);
         pcf2 = new Pcf8575(bus, gpio2Address);
         adc = new Ads7128(
@@ -80,7 +105,11 @@ public partial class ProgrammableAnalogInputModule
 
         for (var i = 0; i < channelConfigs.Length; i++)
         {
-            channelConfigs[i] = ChannelType.Voltage_0_10;
+            channelConfigs[i] = new ChannelConfig
+            {
+                ChannelType = ConfigurableAnalogInputChannelType.Voltage_0_10,
+                UnitType = "Unknown"
+            };
         }
 
         Resolver.Log.Info($"Analogs...");
@@ -107,32 +136,32 @@ public partial class ProgrammableAnalogInputModule
     | NTC         | HIGH   | HIGH   | LOW    | LOW    |
     +-------------+--------+--------+--------+--------+    
     */
-    public void ConfigureChannel(int channelNumber, ChannelType channelType)
+    public void ConfigureChannel(int channelNumber, ChannelConfig channelConfiguration)
     {
         if (channelNumber < 0 || channelNumber > ChannelCount - 1)
         {
             throw new ArgumentException("Invalid channelNumber");
         }
 
-        channelConfigs[channelNumber] = channelType;
+        channelConfigs[channelNumber] = channelConfiguration;
 
         var offset = channelNumber * 4;
 
-        switch (channelType)
+        switch (channelConfiguration.ChannelType)
         {
-            case ChannelType.Voltage_0_10:
+            case ConfigurableAnalogInputChannelType.Voltage_0_10:
                 configBits[offset + 0].State = false;
                 configBits[offset + 1].State = false;
                 configBits[offset + 2].State = true;
                 configBits[offset + 3].State = false;
                 break;
-            case ChannelType.Current_4_20:
+            case ConfigurableAnalogInputChannelType.Current_4_20:
                 configBits[offset + 0].State = false;
                 configBits[offset + 1].State = true;
                 configBits[offset + 2].State = true;
                 configBits[offset + 3].State = true;
                 break;
-            case ChannelType.ThermistorNtc:
+            case ConfigurableAnalogInputChannelType.ThermistorNtc:
                 configBits[offset + 0].State = true;
                 configBits[offset + 1].State = true;
                 configBits[offset + 2].State = false;
@@ -153,7 +182,7 @@ public partial class ProgrammableAnalogInputModule
 
     public Voltage Read0_10V(int channelNumber)
     {
-        if (channelConfigs[channelNumber] != ChannelType.Voltage_0_10)
+        if (channelConfigs[channelNumber].ChannelType != ConfigurableAnalogInputChannelType.Voltage_0_10)
         {
             throw new Exception("Channel is not configured for 0-10V input");
         }
@@ -167,7 +196,7 @@ public partial class ProgrammableAnalogInputModule
 
     public Current Read4_20mA(int channelNumber)
     {
-        if (channelConfigs[channelNumber] != ChannelType.Current_4_20)
+        if (channelConfigs[channelNumber].ChannelType != ConfigurableAnalogInputChannelType.Current_4_20)
         {
             throw new Exception("Channel is not configured for 4-20mA input");
         }
@@ -184,7 +213,7 @@ public partial class ProgrammableAnalogInputModule
 
     public Temperature ReadNtc(int channelNumber, double beta, Temperature referenceTemperature, Resistance resistanceAtRefTemp)
     {
-        if (channelConfigs[channelNumber] != ChannelType.ThermistorNtc)
+        if (channelConfigs[channelNumber].ChannelType != ConfigurableAnalogInputChannelType.ThermistorNtc)
         {
             throw new Exception("Channel is not configured for NTC thermistor input");
         }
@@ -205,5 +234,62 @@ public partial class ProgrammableAnalogInputModule
         double steinhart = 1.0 / referenceTemperature.Kelvin + (1.0 / beta) * Math.Log(resistance / resistanceAtRefTemp.Ohms);
 
         return new Temperature(1.0 / steinhart, Temperature.UnitType.Kelvin);
+    }
+
+    public object ReadChannelAsConfiguredUnit(int channelNumber)
+    {
+        switch (channelConfigs[channelNumber].ChannelType)
+        {
+            case ConfigurableAnalogInputChannelType.Current_4_20:
+                return ReadCurrentAsUnits(channelNumber);
+            case ConfigurableAnalogInputChannelType.Voltage_0_10:
+                return ReadVoltageAsUnits(channelNumber);
+        }
+
+        throw new NotSupportedException();
+    }
+
+    private object ReadCurrentAsUnits(int channelNumber)
+    {
+        var current = Read4_20mA(channelNumber);
+
+        var rawUnit = UnitFactory.CreateUnitFromCanonicalValue(current.Milliamps, channelConfigs[channelNumber].UnitType);
+
+        if (rawUnit is Temperature temperature)
+        {
+            var c = temperature.Celsius * channelConfigs[channelNumber].Scale;
+            c += channelConfigs[channelNumber].Offset;
+            return new Temperature(c);
+        }
+        if (rawUnit is Pressure pressure)
+        {
+            var p = pressure.Bar * channelConfigs[channelNumber].Scale;
+            p += channelConfigs[channelNumber].Offset;
+            return new Pressure(p);
+        }
+
+        throw new NotSupportedException();
+    }
+
+    private object ReadVoltageAsUnits(int channelNumber)
+    {
+        var current = Read0_10V(channelNumber);
+
+        var rawUnit = UnitFactory.CreateUnitFromCanonicalValue(current.Volts, channelConfigs[channelNumber].UnitType);
+
+        if (rawUnit is Temperature temperature)
+        {
+            var c = temperature.Celsius * channelConfigs[channelNumber].Scale;
+            c += channelConfigs[channelNumber].Offset;
+            return new Temperature(c);
+        }
+        if (rawUnit is Pressure pressure)
+        {
+            var p = pressure.Bar * channelConfigs[channelNumber].Scale;
+            p += channelConfigs[channelNumber].Offset;
+            return new Pressure(p);
+        }
+
+        throw new NotSupportedException();
     }
 }
