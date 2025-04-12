@@ -41,17 +41,11 @@ public partial class Mlx90614 : ByteCommsSensorBase<Units.Temperature>,
 
     private Units.Temperature ReadTempRegister(Registers register)
     {
-        Span<byte> buffer = stackalloc byte[2];
-
-        BusComms.Write((byte)register);
-        BusComms.Read(buffer);
-
-        var raw = buffer[0] | buffer[1] << 8;
+        var raw = BusComms.ReadRegisterAsUShort((byte)register);
 
         if (raw == 0) { throw new Exception("Invalid read"); }
 
-
-        return new Units.Temperature((raw * 0.02d) - 273.15, Units.Temperature.UnitType.Celsius);
+        return new Units.Temperature((raw * 0.02) - 273.15, Units.Temperature.UnitType.Celsius);
     }
 
     /// <summary>
