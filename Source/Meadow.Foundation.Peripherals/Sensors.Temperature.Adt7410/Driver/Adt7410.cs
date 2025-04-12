@@ -8,7 +8,7 @@ namespace Meadow.Foundation.Sensors.Temperature
     /// Adt7410 Temperature sensor object
     /// </summary>    
     public partial class Adt7410 : ByteCommsSensorBase<Units.Temperature>,
-        ISamplingTemperatureSensor, II2cPeripheral
+        ITemperatureSensor, II2cPeripheral
     {
         /// <summary>
         /// The default I2C address for the peripheral

@@ -13,7 +13,7 @@ namespace Meadow.Foundation.Sensors.Atmospheric;
 /// </summary>    
 public abstract partial class Ahtx0 :
     ByteCommsSensorBase<(RelativeHumidity? Humidity, Units.Temperature? Temperature)>,
-    ISamplingTemperatureSensor, IHumiditySensor, II2cPeripheral
+    ITemperatureSensor, IHumiditySensor, II2cPeripheral
 {
     private bool isInitialized = false;
 

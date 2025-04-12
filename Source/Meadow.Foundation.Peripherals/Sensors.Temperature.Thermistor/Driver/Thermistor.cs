@@ -15,7 +15,7 @@ namespace Meadow.Foundation.Sensors.Temperature
     ///                        |
     ///                        +---[ TM ]--- &lt; GND
     /// </remarks>
-    public abstract class Thermistor : PollingSensorBase<Units.Temperature>, ISamplingTemperatureSensor
+    public abstract class Thermistor : PollingSensorBase<Units.Temperature>, ITemperatureSensor
     {
         /// <summary>
         /// The analog input port used to determine output voltage of the voltage divider circuit

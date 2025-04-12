@@ -8,14 +8,18 @@ namespace Meadow.Foundation.Sensors.Temperature;
 /// <summary>
 /// LM75 Temperature sensor object
 /// </summary>    
-public partial class Mlx90614 : ITemperatureSensor
+public partial class Mlx90614 : ByteCommsSensorBase<Units.Temperature>,
+        ITemperatureSensor, II2cPeripheral
 {
-    private readonly I2cCommunications i2cComms;
-
     /// <summary>
     /// The default I2C address for the peripheral
     /// </summary>
     public byte DefaultI2cAddress => (byte)Addresses.Default;
+
+    /// <summary>
+    /// The Temperature value from the last reading
+    /// </summary>
+    public Units.Temperature? Temperature => Conditions;
 
     /// <summary>
     /// Create a new Mlx90614 object using the default configuration for the sensor
@@ -23,20 +27,29 @@ public partial class Mlx90614 : ITemperatureSensor
     /// <param name="i2cBus">The I2C bus</param>
     /// <param name="address">I2C address of the sensor</param>
     public Mlx90614(II2cBus i2cBus, byte address = (byte)Addresses.Default)
+        : base(i2cBus, address)
     {
-        i2cComms = new I2cCommunications(i2cBus, address);
+    }
+
+    /// <summary>
+    /// Update the Temperature property
+    /// </summary>
+    protected override Task<Units.Temperature> ReadSensor()
+    {
+        return Task.FromResult(ReadTempRegister(Registers.TOBJ1));
     }
 
     private Units.Temperature ReadTempRegister(Registers register)
     {
         Span<byte> buffer = stackalloc byte[2];
 
-        i2cComms.Write((byte)register);
-        i2cComms.Read(buffer);
+        BusComms.Write((byte)register);
+        BusComms.Read(buffer);
 
         var raw = buffer[0] | buffer[1] << 8;
 
-        if (raw == 0) throw new Exception("Invalid read");
+        if (raw == 0) { throw new Exception("Invalid read"); }
+
 
         return new Units.Temperature((raw * 0.02d) - 273.15, Units.Temperature.UnitType.Celsius);
     }
@@ -44,7 +57,7 @@ public partial class Mlx90614 : ITemperatureSensor
     /// <summary>
     /// Reads the sensor (object) temperature
     /// </summary>
-    public Task<Units.Temperature> Read()
+    public Task<Units.Temperature> ReadTemperature()
     {
         return Task.FromResult(ReadTempRegister(Registers.TOBJ1));
     }

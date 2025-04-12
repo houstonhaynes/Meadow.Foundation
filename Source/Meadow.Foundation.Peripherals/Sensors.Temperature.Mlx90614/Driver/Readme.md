@@ -1,8 +1,8 @@
-# Meadow.Foundation.Sensors.Temperature.Lm75
+# Meadow.Foundation.Sensors.Temperature.Mlx90614
 
-**Lm75 I2C temperature sensor**
+**Mlx90614 I2C temperature sensor**
 
-The **Lm75** library is included in the **Meadow.Foundation.Sensors.Temperature.Lm75** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
+The **Mlx90614** library is included in the **Meadow.Foundation.Sensors.Temperature.Mlx90614** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
 
 This driver is part of the [Meadow.Foundation](https://developer.wildernesslabs.co/Meadow/Meadow.Foundation/) peripherals library, an open-source repository of drivers and libraries that streamline and simplify adding hardware to your C# .NET Meadow IoT applications.
 
@@ -14,41 +14,22 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 
 You can install the library from within Visual studio using the the NuGet Package Manager or from the command line using the .NET CLI:
 
-`dotnet add package Meadow.Foundation.Sensors.Temperature.Lm75`
+`dotnet add package Meadow.Foundation.Sensors.Temperature.Mlx90614`
 ## Usage
 
 ```csharp
-Lm75 lm75;
-
-public override Task Initialize()
-{
-    Resolver.Log.Info("Initialize...");
-
-    lm75 = new Lm75(Device.CreateI2cBus());
-
-    var consumer = Lm75.CreateObserver(
-        handler: result =>
-        {
-            Resolver.Log.Info($"Temperature New Value {result.New.Celsius}C");
-            Resolver.Log.Info($"Temperature Old Value {result.Old?.Celsius}C");
-        },
-        filter: null
-    );
-    lm75.Subscribe(consumer);
-
-    lm75.Updated += (object sender, IChangeResult<Meadow.Units.Temperature> e) =>
-    {
-        Resolver.Log.Info($"Temperature Updated: {e.New.Celsius:n2}C");
-    };
-    return Task.CompletedTask;
-}
+private Mlx90614 sensor;
 
 public override async Task Run()
 {
-    var temp = await lm75.Read();
-    Resolver.Log.Info($"Temperature New Value {temp.Celsius}C");
+    sensor = new Mlx90614(Device.CreateI2cBus(1));
 
-    lm75.StartUpdating();
+    while (true)
+    {
+        var temp = await sensor.Read();
+        Resolver.Log.Info($"Temperature: {temp.Celsius:N1}C ({temp.Fahrenheit:N1}F)");
+        await Task.Delay(1000);
+    }
 }
 
 ```

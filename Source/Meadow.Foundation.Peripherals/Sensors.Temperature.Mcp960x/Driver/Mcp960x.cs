@@ -10,7 +10,7 @@ namespace Meadow.Foundation.Sensors.Temperature;
 /// </summary>    
 public abstract partial class Mcp960x :
     ByteCommsSensorBase<(Units.Temperature? TemperatureHot, Units.Temperature? TemperatureCold)>,
-    ISamplingTemperatureSensor, II2cPeripheral
+    ITemperatureSensor, II2cPeripheral
 {
     /// <summary>
     /// The default I2C address for the peripheral

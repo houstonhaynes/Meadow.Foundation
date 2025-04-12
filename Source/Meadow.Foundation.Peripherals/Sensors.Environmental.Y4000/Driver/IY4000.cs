@@ -12,7 +12,7 @@ public interface IY4000 :
     IElectricalConductivitySensor,
     IPotentialHydrogenSensor,
     ITurbiditySensor,
-    ISamplingTemperatureSensor,
+    ITemperatureSensor,
     IRedoxPotentialSensor
 {
     /// <summary>

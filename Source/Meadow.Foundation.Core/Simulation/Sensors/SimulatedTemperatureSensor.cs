@@ -9,7 +9,7 @@ namespace Meadow.Foundation.Sensors;
 /// <summary>
 /// Represents a simulated temperature sensor that implements both ITemperatureSensor and ISimulatedSensor interfaces.
 /// </summary>
-public class SimulatedTemperatureSensor : ISamplingTemperatureSensor, ISimulatedSensor
+public class SimulatedTemperatureSensor : ITemperatureSensor, ISimulatedSensor
 {
     private readonly Random _random = new();
     private Units.Temperature? _temperature;
