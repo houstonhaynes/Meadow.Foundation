@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace ProgrammableAnalogInputTests;
 
-public class UnitTest1
+public class ConfigSerializationTests
 {
     [Fact]
     public void SerializeConfigurationTest()
@@ -16,8 +16,8 @@ public class UnitTest1
         var temperatureConfig = new ChannelConfig
         {
             ChannelType = ConfigurableAnalogInputChannelType.Current_4_20,
-            Scale = 3.4725,
-            Offset = -31.67,
+            Scale = 6.25,
+            Offset = -25,
             UnitType = nameof(Temperature)
         };
 
@@ -28,7 +28,7 @@ public class UnitTest1
     [Fact]
     public void DeserializeConfigurationTest()
     {
-        var json = "{\"unitType\":\"Temperature\",\"scale\":3.4725,\"channelType\":0,\"offset\":-31.67}";
+        var json = "{\"unitType\":\"Temperature\",\"scale\":3.4725,\"channelType\":1,\"offset\":-31.67}";
 
         var config = MicroJson.Deserialize<ChannelConfig>(json);
         Assert.NotNull(config);

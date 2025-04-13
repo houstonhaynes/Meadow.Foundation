@@ -1,8 +1,9 @@
 <Project>
-  <Import Project="../../Meadow.Contracts/Source/Directory.Packages.props" 
-          Condition="'$(MeadowContractsPackagePropsImported)' != 'true'" />
-          
+  <Import Project="../../Meadow.Contracts/Source/Directory.Packages.props" Condition="'$(MeadowContractsPackagePropsImported)' != 'true'" />
   <PropertyGroup>
     <MeadowContractsPackagePropsImported>true</MeadowContractsPackagePropsImported>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Moq" Version="4.20.72" />
+  </ItemGroup>
 </Project>
