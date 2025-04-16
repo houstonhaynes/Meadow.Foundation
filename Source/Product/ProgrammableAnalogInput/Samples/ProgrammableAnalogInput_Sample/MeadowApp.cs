@@ -1,6 +1,8 @@
 ﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation;
+using Meadow.Units;
+using System;
 using System.Threading.Tasks;
 
 namespace ProgrammableAnalogInput_Sample;
@@ -27,15 +29,31 @@ public class MeadowApp : App<F7CoreComputeV2>
     {
         Resolver.Log.Info("Run...");
         //            module.ConfigureChannel(0, ProgrammableAnalogInputModule.ChannelType.ThermistorNtc);
-        //            module.ConfigureChannel(1, ProgrammableAnalogInputModule.ChannelType.Voltage_0_10);
+        module.ConfigureChannel(0, new ChannelConfig
+        {
+            ChannelNumber = 0,
+            ChannelType = ConfigurableAnalogInputChannelType.Current_4_20,
+            UnitType = "Temperature",
+            Scale = 3.4725, //0-100F, but scale/offs in C
+            Offset = -31.67
+        });
         while (true)
         {
-            //var ch0 = module.Read0_10V(0);
-            //var ch1 = module.Read0_10V(1);
-
-            var t0 = module.ReadNtc(0);
-            Resolver.Log.Info($"CH0: {t0.Fahrenheit:N1}");
-            //                Resolver.Log.Info($"CH1: {ch1.Volts:N3}");
+            var raw = module.Read4_20mA(0);
+            Resolver.Log.Info($"CH1: {raw.Milliamps:N1} mA");
+            try
+            {
+                var t1 = module.ReadChannelAsConfiguredUnit(0);
+                Resolver.Log.Info($"t1: {t1.GetType().Name}");
+                if (t1 is Temperature temp)
+                {
+                    Resolver.Log.Info($"  temp: {temp.Fahrenheit:N1}F");
+                }
+            }
+            catch (Exception ex)
+            {
+                Resolver.Log.Error($"ERROR: {ex.Message}");
+            }
 
             await Task.Delay(1000);
         }

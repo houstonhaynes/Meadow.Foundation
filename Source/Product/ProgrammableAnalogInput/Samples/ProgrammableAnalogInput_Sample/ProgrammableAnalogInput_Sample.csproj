@@ -12,4 +12,9 @@
     <ProjectReference Include="..\..\..\..\Meadow.Foundation.Peripherals\ICs.IOExpanders.Pcx857x\Driver\ICs.IOExpanders.Pcx857x.csproj" />
     <ProjectReference Include="..\..\Driver\ProgramableAnalogInput.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="app.config.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

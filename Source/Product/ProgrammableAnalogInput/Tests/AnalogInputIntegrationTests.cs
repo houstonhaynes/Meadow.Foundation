@@ -1,6 +1,6 @@
 using Meadow.Foundation;
+using Meadow.Foundation.Serialization;
 using Meadow.Units;
-using Newtonsoft.Json;
 
 namespace ProgrammableAnalogInputTests;
 
@@ -18,7 +18,7 @@ public class AnalogInputIntegrationTests
         // Arrange
         // Load the JSON configuration file
         string jsonContent = File.ReadAllText("inputs/three-channel-config.json");
-        var configurations = JsonConvert.DeserializeObject<ChannelConfigurationsJson>(jsonContent);
+        var configurations = MicroJson.Deserialize<ChannelConfigurationsJson>(jsonContent);
 
         // Create the module
         var module = new SimulatedProgrammableAnalogInputModule(8);

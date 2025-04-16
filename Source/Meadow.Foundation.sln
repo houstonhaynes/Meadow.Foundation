@@ -258,6 +258,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Displays.Lcd.CharacterDisplay", "Meadow.Foundation.Peripherals\Displays.Lcd.CharacterDisplay\Driver\Displays.Lcd.CharacterDisplay.csproj", "{C6178701-C96F-4929-A255-396A7F7F8483}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_External", "_External", "{65C50059-6C22-43E9-88DE-AD73F7F108C8}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Meadow.Contracts\Source\Directory.Packages.props = ..\..\Meadow.Contracts\Source\Directory.Packages.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bno055_Sample", "Meadow.Foundation.Peripherals\Sensors.Motion.Bno055\Samples\Bno055_Sample\Bno055_Sample.csproj", "{20861022-699D-4FA2-A92A-05BC0188D25A}"
 EndProject
@@ -1708,6 +1711,19 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BECB5959-895E-4FAF-B2D7-48F98A5C7104}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProgrammableAnalogInputTests", "Product\ProgrammableAnalogInput\Tests\ProgrammableAnalogInputTests.csproj", "{ED0DB7FB-0F8C-8DB5-5386-55A11607FE50}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tca9535", "Tca9535", "{78E84C0F-A74B-4445-936F-BC65D80A7B0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICs.IOExpanders.Tca9535", "Meadow.Foundation.Peripherals\ICs.IOExpanders.Tca9535\Driver\ICs.IOExpanders.Tca9535.csproj", "{86AAFFF9-0155-7334-9D15-89F0B3C170E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{DD562C9E-7964-4921-ACF7-E78D5ED2EFA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tca9535_Sample", "Meadow.Foundation.Peripherals\ICs.IOExpanders.Tca9535\Samples\Tca9535_Sample\Tca9535_Sample.csproj", "{69F006FE-41FB-2D91-E82D-79AF71AAA028}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -4127,6 +4143,18 @@ Global
 		{ED0DB7FB-0F8C-8DB5-5386-55A11607FE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED0DB7FB-0F8C-8DB5-5386-55A11607FE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED0DB7FB-0F8C-8DB5-5386-55A11607FE50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86AAFFF9-0155-7334-9D15-89F0B3C170E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86AAFFF9-0155-7334-9D15-89F0B3C170E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86AAFFF9-0155-7334-9D15-89F0B3C170E9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{86AAFFF9-0155-7334-9D15-89F0B3C170E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86AAFFF9-0155-7334-9D15-89F0B3C170E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86AAFFF9-0155-7334-9D15-89F0B3C170E9}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{69F006FE-41FB-2D91-E82D-79AF71AAA028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69F006FE-41FB-2D91-E82D-79AF71AAA028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69F006FE-41FB-2D91-E82D-79AF71AAA028}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{69F006FE-41FB-2D91-E82D-79AF71AAA028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69F006FE-41FB-2D91-E82D-79AF71AAA028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69F006FE-41FB-2D91-E82D-79AF71AAA028}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -4979,6 +5007,10 @@ Global
 		{E779D862-7D18-D140-C3D2-2616FD9B4B4F} = {C638DC91-A2D4-4EF4-B4B3-B055AE9A6914}
 		{BECB5959-895E-4FAF-B2D7-48F98A5C7104} = {F3957ECB-7B23-4A1A-89CC-90A826953EA2}
 		{ED0DB7FB-0F8C-8DB5-5386-55A11607FE50} = {BECB5959-895E-4FAF-B2D7-48F98A5C7104}
+		{78E84C0F-A74B-4445-936F-BC65D80A7B0F} = {86B81B21-8C90-4A99-B113-FA71F8A6CD8D}
+		{86AAFFF9-0155-7334-9D15-89F0B3C170E9} = {78E84C0F-A74B-4445-936F-BC65D80A7B0F}
+		{DD562C9E-7964-4921-ACF7-E78D5ED2EFA7} = {78E84C0F-A74B-4445-936F-BC65D80A7B0F}
+		{69F006FE-41FB-2D91-E82D-79AF71AAA028} = {DD562C9E-7964-4921-ACF7-E78D5ED2EFA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF7CA16F-8C38-4546-87A2-5DAAF58A1520}
