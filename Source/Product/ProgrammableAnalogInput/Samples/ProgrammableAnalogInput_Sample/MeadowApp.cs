@@ -28,33 +28,39 @@ public class MeadowApp : App<F7CoreComputeV2>
     public override async Task Run()
     {
         Resolver.Log.Info("Run...");
-        //            module.ConfigureChannel(0, ProgrammableAnalogInputModule.ChannelType.ThermistorNtc);
-        module.ConfigureChannel(0, new ChannelConfig
+
+        for (var i = 0; i < 8; i++)
         {
-            ChannelNumber = 0,
-            ChannelType = ConfigurableAnalogInputChannelType.Current_4_20,
-            UnitType = "Temperature",
-            Scale = 3.4725, //0-100F, but scale/offs in C
-            Offset = -31.67
-        });
+            module.ConfigureChannel(new ChannelConfig
+            {
+                ChannelNumber = i,
+                ChannelType = ConfigurableAnalogInputChannelType.Current_4_20,
+                UnitType = "Temperature",
+                Scale = 3.4725, //0-100F, but scale/offs in C
+                Offset = -31.67
+            });
+        }
+
         while (true)
         {
-            var raw = module.Read4_20mA(0);
-            Resolver.Log.Info($"CH1: {raw.Milliamps:N1} mA");
-            try
+            for (var i = 0; i < module.ChannelCount; i++)
             {
-                var t1 = module.ReadChannelAsConfiguredUnit(0);
-                Resolver.Log.Info($"t1: {t1.GetType().Name}");
-                if (t1 is Temperature temp)
+                try
                 {
-                    Resolver.Log.Info($"  temp: {temp.Fahrenheit:N1}F");
+                    var raw = module.Read4_20mA(i);
+                    Resolver.Log.Info($"CH{i}: {raw.Milliamps:N1} mA");
+                    var t1 = module.ReadChannelAsConfiguredUnit(i);
+                    if (t1 is Temperature temp)
+                    {
+                        Resolver.Log.Info($"temp{i}: {temp.Fahrenheit:N1}F");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Resolver.Log.Error($"ERROR: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                Resolver.Log.Error($"ERROR: {ex.Message}");
-            }
-
+            Resolver.Log.Info($"---");
             await Task.Delay(1000);
         }
     }

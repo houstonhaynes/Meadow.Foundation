@@ -29,10 +29,10 @@ public class SimulatedProgrammableAnalogInputModule : ProgrammableAnalogInputMod
         _configs[channelNumber].State = voltage.Volts;
     }
 
-    public override void ConfigureChannel(int channelNumber, ChannelConfig channelConfiguration)
+    public override void ConfigureChannel(ChannelConfig channelConfiguration)
     {
-        _configs[channelNumber].Config = channelConfiguration;
-        base.ConfigureChannel(channelNumber, channelConfiguration);
+        _configs[channelConfiguration.ChannelNumber].Config = channelConfiguration;
+        base.ConfigureChannel(channelConfiguration);
     }
 
     public override Voltage Read0_10V(int channelNumber)

@@ -5,7 +5,7 @@ namespace Meadow.Foundation;
 public interface IProgrammableAnalogInputModule
 {
     int ChannelCount { get; }
-    void ConfigureChannel(int channelNumber, ChannelConfig channelConfiguration);
+    void ConfigureChannel(ChannelConfig channelConfiguration);
     Voltage ReadChannelRaw(int channelNumber);
     Voltage Read0_10V(int channelNumber);
     Current Read0_20mA(int channelNumber);

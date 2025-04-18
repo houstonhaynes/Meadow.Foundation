@@ -1,29 +1,8 @@
 ﻿using Meadow.Common;
 using Meadow.Units;
 using System;
-using System.Collections.Generic;
 
 namespace Meadow.Foundation;
-
-public interface ISensor
-{
-    string Name { get; set; }
-    Type UnitType { get; set; }
-}
-
-public interface ISensorService
-{
-    IEnumerable<ISensor> GetAvailableSensors();
-    object GetSensorValue(string sensorName);
-}
-
-public class CurrentOutOfRangeException : Exception
-{
-    public CurrentOutOfRangeException(string message)
-        : base(message)
-    {
-    }
-}
 
 public abstract class ProgrammableAnalogInputModuleBase : IProgrammableAnalogInputModule
 {
@@ -41,15 +20,14 @@ public abstract class ProgrammableAnalogInputModuleBase : IProgrammableAnalogInp
         channelConfigs = new ChannelConfig[channelCount];
     }
 
-    public virtual void ConfigureChannel(int channelNumber, ChannelConfig channelConfiguration)
+    public virtual void ConfigureChannel(ChannelConfig channelConfiguration)
     {
-        if (channelNumber < 0 || channelNumber > ChannelCount - 1)
+        if (channelConfiguration.ChannelNumber < 0 || channelConfiguration.ChannelNumber > ChannelCount - 1)
         {
             throw new ArgumentException("Invalid channelNumber");
         }
 
-        channelConfigs[channelNumber] = channelConfiguration;
-
+        channelConfigs[channelConfiguration.ChannelNumber] = channelConfiguration;
     }
 
     public Temperature ReadNtc(int channelNumber)

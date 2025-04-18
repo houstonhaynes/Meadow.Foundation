@@ -161,11 +161,11 @@ public partial class ProgrammableAnalogInputModule : ProgrammableAnalogInputModu
     | NTC         | HIGH   | HIGH   | LOW    | LOW    |
     +-------------+--------+--------+--------+--------+    
     */
-    public override void ConfigureChannel(int channelNumber, ChannelConfig channelConfiguration)
+    public override void ConfigureChannel(ChannelConfig channelConfiguration)
     {
-        base.ConfigureChannel(channelNumber, channelConfiguration);
+        base.ConfigureChannel(channelConfiguration);
 
-        var offset = channelNumber * 4;
+        var offset = channelConfiguration.ChannelNumber * 4;
 
         switch (channelConfiguration.ChannelType)
         {

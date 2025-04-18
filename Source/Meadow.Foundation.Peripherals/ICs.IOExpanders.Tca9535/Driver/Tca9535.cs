@@ -61,7 +61,8 @@ public partial class Tca9535 : II2cPeripheral,
 
         // write the config
         Resolver.Log.Info($"setting cfg: 0x{configRegister:X4}");
-        i2cComms.WriteRegister(Registers.ConfigurationPort0, configRegister, ByteOrder.LittleEndian);
+        i2cComms.WriteRegister(Registers.ConfigurationPort0, (byte)(configRegister >> 8));
+        i2cComms.WriteRegister(Registers.ConfigurationPort1, (byte)(configRegister & 0xff));
 
         return new DigitalOutputPort(this, pin, initialState);
     }
@@ -95,7 +96,15 @@ public partial class Tca9535 : II2cPeripheral,
             currentState &= (ushort)~bit;
         }
         Resolver.Log.Info($"setting: 0x{currentState:X4}");
-        i2cComms.WriteRegister(Registers.OutputPort0, currentState, ByteOrder.LittleEndian);
+
+        if (portNumber < 8)
+        {
+            i2cComms.WriteRegister(Registers.OutputPort0, (byte)(currentState >> 8));
+        }
+        else
+        {
+            i2cComms.WriteRegister(Registers.OutputPort1, (byte)(currentState & 0xff));
+        }
     }
 
     /// <inheritdoc/>
