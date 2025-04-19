@@ -1,6 +1,6 @@
 ﻿namespace Meadow.Foundation.ICs.IOExpanders;
 
-public partial class Tca9535
+public partial class Tca95x5
 {
     /// <summary>
     /// Valid I2C addresses for the Tca9535

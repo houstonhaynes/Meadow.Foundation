@@ -24,7 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Meadow.Foundation.Peripherals\ICs.ADC.Ads7128\Driver\ICs.ADC.Ads7128.csproj" />
-    <ProjectReference Include="..\..\..\Meadow.Foundation.Peripherals\ICs.IOExpanders.Tca9535\Driver\ICs.IOExpanders.Tca9535.csproj" />
+    <ProjectReference Include="..\..\..\Meadow.Foundation.Peripherals\ICs.IOExpanders.Tca9535\Driver\ICs.IOExpanders.Tca95x5.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Readme.md">

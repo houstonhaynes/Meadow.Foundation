@@ -18,8 +18,9 @@ public class ReadConfiguredInputTests
         // Configure channel 2 as 4-20mA with temperature unit
         // Scale of 100 means 4mA = 0°C, 20mA = 100°C
         // Offset of -20 means the final range is -20°C to 80°C
-        module.ConfigureChannel(2, new ChannelConfig
+        module.ConfigureChannel(new ChannelConfig
         {
+            ChannelNumber = 2,
             ChannelType = ConfigurableAnalogInputChannelType.Current_4_20,
             UnitType = "Temperature",
             Scale = 6.25,
@@ -53,8 +54,9 @@ public class ReadConfiguredInputTests
 
         // Configure channel as 4-20mA with temperature unit
         // For a sensor that measures -40°F to 140°F (-40°C to 60°C)
-        module.ConfigureChannel(channel, new ChannelConfig
+        module.ConfigureChannel(new ChannelConfig
         {
+            ChannelNumber = channel,
             ChannelType = ConfigurableAnalogInputChannelType.Current_4_20,
             UnitType = "Temperature",
             Scale = 6.25,    // 100°C span ÷ 16mA = 6.25°C/mA
@@ -102,8 +104,9 @@ public class ReadConfiguredInputTests
 
         // Configure channel 3 as 0-10V with pressure unit
         // For a sensor that measures 0-30 psi across 0-10V
-        module.ConfigureChannel(channel, new ChannelConfig
+        module.ConfigureChannel(new ChannelConfig
         {
+            ChannelNumber = channel,
             ChannelType = ConfigurableAnalogInputChannelType.Voltage_0_10,
             UnitType = "Pressure",
             Scale = 0.2068, // 2.07 bar span ÷ 10V = 0.2068 bar/V

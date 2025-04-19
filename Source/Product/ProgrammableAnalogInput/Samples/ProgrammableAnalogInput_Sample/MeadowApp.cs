@@ -1,7 +1,6 @@
 ﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation;
-using Meadow.Units;
 using System;
 using System.Threading.Tasks;
 
@@ -28,7 +27,10 @@ public class MeadowApp : App<F7CoreComputeV2>
     public override async Task Run()
     {
         Resolver.Log.Info("Run...");
+    }
 
+    public async Task Test4_20()
+    {
         for (var i = 0; i < 8; i++)
         {
             module.ConfigureChannel(new ChannelConfig
@@ -54,6 +56,73 @@ public class MeadowApp : App<F7CoreComputeV2>
                     {
                         Resolver.Log.Info($"temp{i}: {temp.Fahrenheit:N1}F");
                     }
+                }
+                catch (Exception ex)
+                {
+                    Resolver.Log.Error($"ERROR: {ex.Message}");
+                }
+            }
+            Resolver.Log.Info($"---");
+            await Task.Delay(1000);
+        }
+
+    public async Task Test0_10()
+    {
+        for (var i = 0; i < 8; i++)
+        {
+            module.ConfigureChannel(new ChannelConfig
+            {
+                ChannelNumber = i,
+                ChannelType = ConfigurableAnalogInputChannelType.Voltage_0_10,
+                UnitType = "Temperature",
+                Scale = 3.4725, //0-100F, but scale/offs in C
+                Offset = -31.67
+            });
+
+            module.ConfigureChannel(new ChannelConfig
+            {
+                ChannelNumber = i,
+                ChannelType = ConfigurableAnalogInputChannelType.ThermistorNtc
+            });
+        }
+
+        while (true)
+        {
+            for (var i = 0; i < module.ChannelCount; i++)
+            {
+                try
+                {
+                    var raw = module.Read0_10V(i);
+                    Resolver.Log.Info($"CH{i}: {raw.Volts:N2} V");
+                }
+                catch (Exception ex)
+                {
+                    Resolver.Log.Error($"ERROR: {ex.Message}");
+                }
+            }
+            Resolver.Log.Info($"---");
+            await Task.Delay(1000);
+        }
+
+    public async Task TestNtc()
+    {
+        for (var i = 0; i < 8; i++)
+        {
+            module.ConfigureChannel(new ChannelConfig
+            {
+                ChannelNumber = i,
+                ChannelType = ConfigurableAnalogInputChannelType.ThermistorNtc
+            });
+        }
+
+        while (true)
+        {
+            for (var i = 0; i < module.ChannelCount; i++)
+            {
+                try
+                {
+                    var raw = module.ReadNtc(i);
+                    Resolver.Log.Info($"CH{i}: {raw.Fahrenheit:N2} F");
                 }
                 catch (Exception ex)
                 {

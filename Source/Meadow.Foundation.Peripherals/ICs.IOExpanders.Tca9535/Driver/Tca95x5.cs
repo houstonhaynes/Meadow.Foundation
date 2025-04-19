@@ -3,7 +3,7 @@ using System;
 
 namespace Meadow.Foundation.ICs.IOExpanders;
 
-public partial class Tca9535 : II2cPeripheral,
+public abstract partial class Tca95x5 : II2cPeripheral,
     IDigitalInputOutputController
 {
     private readonly byte address;
@@ -17,7 +17,7 @@ public partial class Tca9535 : II2cPeripheral,
     /// </summary>
     public PinDefinitions Pins { get; }
 
-    public Tca9535(II2cBus i2cBus, byte address = (byte)Addresses.Default)
+    public Tca95x5(II2cBus i2cBus, byte address = (byte)Addresses.Default)
     {
         Pins = new PinDefinitions(this)
         {

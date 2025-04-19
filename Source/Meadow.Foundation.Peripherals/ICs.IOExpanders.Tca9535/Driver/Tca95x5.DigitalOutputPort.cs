@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Meadow.Foundation.ICs.IOExpanders;
 
-public partial class Tca9535
+public partial class Tca95x5
 {
     /// <summary>
     /// Represents a digital output port for the TCA9535 I/O expander.
@@ -36,7 +36,7 @@ public partial class Tca9535
         /// </summary>
         public IPin Pin { get; }
 
-        private readonly Tca9535 controller;
+        private readonly Tca95x5 controller;
         private readonly byte portNumber;
 
         /// <summary>
@@ -45,7 +45,7 @@ public partial class Tca9535
         /// <param name="controller">The TCA9535 controller instance that manages the port.</param>
         /// <param name="pin">The pin associated with the digital output port.</param>
         /// <param name="initialState">The initial state of the digital output port.</param>
-        internal DigitalOutputPort(Tca9535 controller, IPin pin, bool initialState)
+        internal DigitalOutputPort(Tca95x5 controller, IPin pin, bool initialState)
         {
             InitialState = initialState;
             Pin = pin;

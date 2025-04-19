@@ -9,14 +9,14 @@ public class MeadowApp : App<F7CoreComputeV2>
 {
     //<!=SNIP=>
 
-    private Tca9535 expander;
+    private Tca95x5 expander;
 
     public override Task Initialize()
     {
         Resolver.Log.Info("Initialize...");
         var i2CBus = Device.CreateI2cBus(1);
 
-        expander = new Tca9535(i2CBus);
+        expander = new Tca95x5(i2CBus);
 
         return base.Initialize();
     }

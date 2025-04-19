@@ -1719,7 +1719,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tca9535", "Tca9535", "{78E84C0F-A74B-4445-936F-BC65D80A7B0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICs.IOExpanders.Tca9535", "Meadow.Foundation.Peripherals\ICs.IOExpanders.Tca9535\Driver\ICs.IOExpanders.Tca9535.csproj", "{86AAFFF9-0155-7334-9D15-89F0B3C170E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICs.IOExpanders.Tca95x5", "Meadow.Foundation.Peripherals\ICs.IOExpanders.Tca9535\Driver\ICs.IOExpanders.Tca95x5.csproj", "{86AAFFF9-0155-7334-9D15-89F0B3C170E9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{DD562C9E-7964-4921-ACF7-E78D5ED2EFA7}"
 EndProject

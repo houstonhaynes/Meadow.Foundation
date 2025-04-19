@@ -13,8 +13,8 @@ public partial class ProgrammableAnalogInputModule : ProgrammableAnalogInputModu
     private readonly Resistance NtcFixedResistor = 10_000.Ohms();
 
     private readonly Ads7128 adc;
-    private readonly Tca9535 tca1;
-    private readonly Tca9535 tca2;
+    private readonly Tca95x5 tca1;
+    private readonly Tca95x5 tca2;
     private readonly IDigitalOutputPort[] configBits;
     private readonly IAnalogInputPort[] analogInputs;
 
@@ -210,6 +210,8 @@ public partial class ProgrammableAnalogInputModule : ProgrammableAnalogInputModu
 
         var raw = analogInputs[channelNumber].Read().GetAwaiter().GetResult();
 
+        Resolver.Log.Info($"ADC: {raw.Volts:N2} V");
+
         return new Voltage((raw.Volts / adc.ReferenceVoltage.Volts) * 10, Voltage.UnitType.Volts);
     }
 
@@ -242,12 +244,15 @@ public partial class ProgrammableAnalogInputModule : ProgrammableAnalogInputModu
 
         var raw = analogInputs[channelNumber].Read().GetAwaiter().GetResult();
 
+        Resolver.Log.Info($"ADC: {raw.Volts:N2} V");
+
         if (raw >= adc.ReferenceVoltage)
         {
             throw new Exception("ADC is saturated");
         }
 
-        var resistance = NtcFixedResistor.Ohms * raw.Volts / (adc.ReferenceVoltage.Volts - raw.Volts);
+        //var resistance = NtcFixedResistor.Ohms * raw.Volts / (adc.ReferenceVoltage.Volts - raw.Volts);
+        var resistance = NtcFixedResistor.Ohms * raw.Volts / (12 - raw.Volts);
 
         // Using simplified B-parameter equation (derived from Steinhart-Hart)
         // 1/T = 1/T0 + (1/B) * ln(R/R0)

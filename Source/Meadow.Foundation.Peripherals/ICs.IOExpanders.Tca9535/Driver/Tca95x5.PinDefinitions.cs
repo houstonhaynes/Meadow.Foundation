@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Meadow.Foundation.ICs.IOExpanders;
 
-public partial class Tca9535
+public partial class Tca95x5
 {
     /// <summary>
     /// Pin definitions the TCA9535
@@ -13,7 +13,7 @@ public partial class Tca9535
         /// <summary>
         /// Create a new PinDefinitions object
         /// </summary>
-        internal PinDefinitions(Tca9535 controller)
+        internal PinDefinitions(Tca95x5 controller)
         {
             Controller = controller;
         }
