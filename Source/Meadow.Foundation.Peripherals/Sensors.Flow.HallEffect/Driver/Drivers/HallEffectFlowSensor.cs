@@ -22,11 +22,9 @@ namespace Meadow.Peripherals.Sensors.Flow;
 /// S = Scale
 /// O = Offset
 /// </remarks>
-public abstract class HallEffectBase : PollingSensorBase<VolumetricFlow>, IVolumetricFlowSensor
+public class HallEffectFlowSensor : PollingSensorBase<VolumetricFlow>, IVolumetricFlowSensor
 {
     private readonly IDigitalSignalAnalyzer analyzer;
-    private readonly double scale;
-    private readonly double offset;
 
     /// <summary>
     /// Initializes a new instance of a Hall effect flow sensor.
@@ -34,20 +32,43 @@ public abstract class HallEffectBase : PollingSensorBase<VolumetricFlow>, IVolum
     /// <param name="pin">The digital input pin connected to the sensor's signal line.</param>
     /// <param name="scale">The sensor scale factor (S) in Hz per L/min</param>
     /// <param name="offset">The sensor offset (O) in Hz</param>
-    protected HallEffectBase(IPin pin, double scale, double offset = 0)
+    protected HallEffectFlowSensor(IPin pin, double scale, double offset = 0)
     {
-        this.scale = scale;
-        this.offset = offset;
+        this.Scale = scale;
+        this.Offset = offset;
         analyzer = pin.CreateDigitalSignalAnalyzer(false);
     }
 
+    /// <summary>
+    /// Initializes a new instance of a Hall effect flow sensor.
+    /// </summary>
+    /// <param name="analyzer">The digital signal analyzer to use for the sensor's signal line.</param>
+    /// <param name="scale">The sensor scale factor (S) in Hz per L/min</param>
+    /// <param name="offset">The sensor offset (O) in Hz</param>
+    protected HallEffectFlowSensor(IDigitalSignalAnalyzer analyzer, double scale, double offset = 0)
+    {
+        this.Scale = scale;
+        this.Offset = offset;
+        this.analyzer = analyzer;
+    }
+
+    /// <summary>
+    /// Gets the sensor scale factor (S) in Hz per L/min
+    /// </summary>
+    protected double Scale { get; }
+
+    /// <summary>
+    /// gets the sensor offset (O) in Hz
+    /// </summary>
+    protected double Offset { get; }
+
     /// <inheritdoc/>
-    public VolumetricFlow Flow => CalculateFlow(analyzer.GetFrequency(), scale, offset);
+    public VolumetricFlow Flow => CalculateFlow(analyzer.GetFrequency(), Scale, Offset);
 
     /// <inheritdoc/>
     protected override Task<VolumetricFlow> ReadSensor()
     {
-        return Task.FromResult(CalculateFlow(analyzer.GetFrequency(), scale, offset));
+        return Task.FromResult(CalculateFlow(analyzer.GetFrequency(), Scale, Offset));
     }
 
     /// <summary>
