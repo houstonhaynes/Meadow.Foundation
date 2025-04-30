@@ -26,7 +26,7 @@ public class AnalogInputIntegrationTests
         // Apply all configurations from the JSON
         foreach (var config in configurations.ChannelConfigurations)
         {
-            module.ConfigureChannel(config.ChannelNumber, config);
+            module.ConfigureChannel(config);
             Console.WriteLine($"Configured channel {config.ChannelNumber} as {config.Description}");
         }
 

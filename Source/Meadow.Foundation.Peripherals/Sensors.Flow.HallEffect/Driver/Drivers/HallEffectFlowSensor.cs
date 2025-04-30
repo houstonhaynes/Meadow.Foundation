@@ -22,7 +22,8 @@ namespace Meadow.Peripherals.Sensors.Flow;
 /// S = Scale
 /// O = Offset
 /// </remarks>
-public class HallEffectFlowSensor : PollingSensorBase<VolumetricFlow>, IVolumetricFlowSensor
+public class HallEffectFlowSensor :
+    PollingSensorBase<VolumetricFlow>, IVolumetricFlowSensor, ISensor<VolumetricFlow>
 {
     private readonly IDigitalSignalAnalyzer analyzer;
 
