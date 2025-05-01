@@ -1,5 +1,6 @@
 ﻿using Meadow.Units;
 using System;
+using System.Threading.Tasks;
 
 namespace Meadow.Foundation;
 
@@ -7,6 +8,7 @@ public class SimulatedProgrammableAnalogInputModule : ProgrammableAnalogInputMod
 {
     private readonly (ChannelConfig Config, double State)[] _configs;
     private readonly Voltage AdcReferenceVoltage = 3.3.Volts();
+    private readonly Random _random = new Random();
 
     public int ChannelCount { get; }
 
@@ -22,6 +24,30 @@ public class SimulatedProgrammableAnalogInputModule : ProgrammableAnalogInputMod
                 ChannelType = ConfigurableAnalogInputChannelType.Voltage_0_10
             };
         }
+    }
+
+    public void StartSimulation()
+    {
+        _ = Task.Run(async () =>
+        {
+            while (true)
+            {
+                foreach (var channel in _configs)
+                {
+                    var s = channel.State;
+
+                    do
+                    {
+                        var delta = (_random.NextDouble() * 0.2) - 0.1;
+                        s += delta;
+                    } while (s < 0 || s > 3.3);
+
+                    SetChannelRawVoltage(channel.Config.ChannelNumber, s.Volts());
+                }
+
+                await Task.Delay(1000);
+            }
+        });
     }
 
     public void SetChannelRawVoltage(int channelNumber, Voltage voltage)
