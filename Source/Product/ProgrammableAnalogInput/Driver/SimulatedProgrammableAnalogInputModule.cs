@@ -34,7 +34,7 @@ public class SimulatedProgrammableAnalogInputModule : ProgrammableAnalogInputMod
             {
                 foreach (var channel in _configs)
                 {
-                    var s = channel.State;
+                    var s = ReadChannelRaw(channel.Config.ChannelNumber).Volts;
 
                     do
                     {
