@@ -27,7 +27,7 @@ public class AnalogInputIntegrationTests
         foreach (var config in configurations.ChannelConfigurations)
         {
             module.ConfigureChannel(config);
-            Console.WriteLine($"Configured channel {config.ChannelNumber} as {config.Description}");
+            Console.WriteLine($"Configured channel {config.ChannelNumber} as {config.Name}");
         }
 
         // Test 1: 0-100°F Temperature Sensor (Channel 0)

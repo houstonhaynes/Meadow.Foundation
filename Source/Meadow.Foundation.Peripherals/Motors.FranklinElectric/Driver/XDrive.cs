@@ -8,7 +8,7 @@ namespace Meadow.Foundation.VFDs.FranklinElectric;
 /// Represents a Franklin Electric XDrive Variable Frequency Drive controller.
 /// Provides methods to communicate with the drive via Modbus RTU protocol.
 /// </summary>
-public class XDrive
+public class XDrive : IXDrive
 {
     private readonly ModbusRtuClient _modbus;
     private readonly byte _busAddress;
