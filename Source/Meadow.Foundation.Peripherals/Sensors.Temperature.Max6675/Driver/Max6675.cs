@@ -106,7 +106,6 @@ public class Max6675 : ITemperatureSensor, ISpiPeripheral, IDisposable
         Span<byte> buffer = stackalloc byte[2];
         spiComms.Read(buffer);
         var raw = (ushort)((buffer[0] << 8) | buffer[1]);
-        Resolver.Log.Info($"RAW: {buffer[0]:X2} {buffer[1]:X2}");
 
         // if bit D2 is high, the thermocouple is open
         if ((raw & (1 << 2)) != 0)
