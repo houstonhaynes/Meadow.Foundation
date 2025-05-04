@@ -3,11 +3,15 @@ using System;
 
 namespace Meadow.Foundation.ICs.IOExpanders;
 
+/// <summary>
+/// Base class for TCA95x5 IO Expanders
+/// </summary>
 public abstract partial class Tca95x5 : II2cPeripheral,
     IDigitalInputOutputController
 {
     private readonly byte address;
 
+    /// <inheritdoc/>
     public byte DefaultI2cAddress => (byte)Addresses.Default;
 
     private readonly II2cCommunications i2cComms;
@@ -17,6 +21,11 @@ public abstract partial class Tca95x5 : II2cPeripheral,
     /// </summary>
     public PinDefinitions Pins { get; }
 
+    /// <summary>
+    /// Called from an inheriting driver to create a Tca95x5
+    /// </summary>
+    /// <param name="i2cBus">The I2C bus</param>
+    /// <param name="address">The I2C bus address</param>
     public Tca95x5(II2cBus i2cBus, byte address = (byte)Addresses.Default)
     {
         Pins = new PinDefinitions(this)
