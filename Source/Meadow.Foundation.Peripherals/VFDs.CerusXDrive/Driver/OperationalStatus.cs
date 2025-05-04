@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Meadow.Foundation.VFDs.FranklinElectric;
+namespace Meadow.Foundation.VFDs;
 
 // DEV NOTE: it's not at all obvious how these work with the device
 // testing does not at all match the brief, terrible description of decoding in the data sheet
@@ -9,7 +9,7 @@ namespace Meadow.Foundation.VFDs.FranklinElectric;
 // turn on just HAND and it changes to: 9472 = 8192 + 1024 + 256       = 0b00100101_00000000
 
 /// <summary>
-/// Represents the operational status of the Franklin Electric XDrive Variable Frequency Drive.
+/// Represents the operational status of the Franklin Electric CerusXDrive Variable Frequency Drive.
 /// The values indicate different combinations of Run and Stop LED states on the drive.
 /// </summary>
 [Flags]

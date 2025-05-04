@@ -2,11 +2,11 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Meadow.Foundation.VFDs.FranklinElectric;
+namespace Meadow.Foundation.VFDs;
 
 /// <summary>
-/// Represents a simulated Franklin Electric XDrive Variable Frequency Drive controller.
-/// Provides methods to simulate the behavior of an XDrive device without requiring actual hardware.
+/// Represents a simulated Franklin Electric CerusXDrive Variable Frequency Drive controller.
+/// Provides methods to simulate the behavior of an CerusXDrive device without requiring actual hardware.
 /// </summary>
 public class SimulatedXDrive : IXDrive
 {
@@ -34,7 +34,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates establishing a connection to the XDrive device.
+    /// Simulates establishing a connection to the CerusXDrive device.
     /// </summary>
     /// <returns>A task representing the asynchronous connection operation.</returns>
     public Task Connect()
@@ -44,7 +44,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates disconnecting from the XDrive device.
+    /// Simulates disconnecting from the CerusXDrive device.
     /// </summary>
     public void Disconnect()
     {
@@ -64,7 +64,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current error codes from the XDrive.
+    /// Simulates reading the current error codes from the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the error code.</returns>
     public Task<ushort> ReadErrorCodes()
@@ -74,7 +74,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current operational status of the XDrive.
+    /// Simulates reading the current operational status of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the operational status code.</returns>
     public Task<ushort> ReadOperationalStatus()
@@ -84,7 +84,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current output frequency of the XDrive.
+    /// Simulates reading the current output frequency of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the output frequency in Hertz.</returns>
     public Task<Frequency> ReadOutputFrequency()
@@ -96,7 +96,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current output current of the XDrive.
+    /// Simulates reading the current output current of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the output current in Amps.</returns>
     public Task<Current> ReadOutputCurrent()
@@ -108,7 +108,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current DC bus voltage of the XDrive.
+    /// Simulates reading the current DC bus voltage of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the DC bus voltage in Volts.</returns>
     public Task<Voltage> ReadDCBusVoltage()
@@ -120,7 +120,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current output voltage of the XDrive.
+    /// Simulates reading the current output voltage of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the output voltage in Volts.</returns>
     public Task<Voltage> ReadOutputVoltage()
@@ -132,7 +132,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current IGBT (Insulated Gate Bipolar Transistor) temperature of the XDrive.
+    /// Simulates reading the current IGBT (Insulated Gate Bipolar Transistor) temperature of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the IGBT temperature in Celsius.</returns>
     public Task<Temperature> ReadIGBTTemperature()
@@ -144,7 +144,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current ambient temperature around the XDrive.
+    /// Simulates reading the current ambient temperature around the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the ambient temperature in Celsius.</returns>
     public Task<Temperature> ReadAmbientTemperature()
@@ -156,7 +156,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current drive status of the XDrive.
+    /// Simulates reading the current drive status of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the drive status code.</returns>
     public Task<ushort> ReadDriveStatus()
@@ -166,7 +166,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current control mode of the XDrive.
+    /// Simulates reading the current control mode of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the control mode code.</returns>
     public Task<ushort> ReadControlMode()
@@ -176,7 +176,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current digital output status of the XDrive.
+    /// Simulates reading the current digital output status of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the digital output status code.</returns>
     public Task<ushort> ReadDigitalOutputStatus()
@@ -186,7 +186,7 @@ public class SimulatedXDrive : IXDrive
     }
 
     /// <summary>
-    /// Simulates reading the current digital input status of the XDrive.
+    /// Simulates reading the current digital input status of the CerusXDrive.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The value is the digital input status code.</returns>
     public Task<ushort> ReadDigitalInputStatus()

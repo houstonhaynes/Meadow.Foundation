@@ -1,15 +1,19 @@
-﻿using Meadow.Foundation.VFDs.FranklinElectric;
+﻿using Meadow;
+using Meadow.Devices;
+using Meadow.Foundation.VFDs;
 using Meadow.Modbus;
+using System.Threading.Tasks;
 
-namespace Motors.FranklinElectric.XDrive_Sample;
+namespace Motors.CerusXDrive_Sample;
 
-internal class Program
+public class MeadowApp : App<F7FeatherV2>
 {
-    private static async Task Main(string[] args)
+    //<!=SNIP=>
+    public async override Task Run()
     {
         var port = new SerialPortShim("COM12", 9600, Meadow.Hardware.Parity.None, 8, Meadow.Hardware.StopBits.One);
         var modbus = new ModbusRtuClient(port);
-        var vfd = new XDrive(modbus, 1);
+        var vfd = new CerusXDrive(modbus, 1);
         await vfd.Connect();
 
         var v = await vfd.ReadOutputVoltage();

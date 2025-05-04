@@ -1,4 +1,4 @@
-﻿namespace Meadow.Foundation.VFDs.FranklinElectric;
+﻿namespace Meadow.Foundation.VFDs;
 
 internal enum Registers
 {
