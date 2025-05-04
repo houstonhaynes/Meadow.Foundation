@@ -1,10 +1,10 @@
-﻿namespace Meadow.Foundation.VFDs.FranklinElectric;
+﻿namespace Meadow.Foundation.VFDs;
 
 // DEV NOTE: these are purely reverse engineered from a drive
 // The enum is absolutely missing values, and it's not obvious yet how to decode multiple errors at once
 
 /// <summary>
-/// Represents error codes for the Franklin Electric XDrive Variable Frequency Drive.
+/// Represents error codes for the Franklin Electric CerusXDrive Variable Frequency Drive.
 /// These codes correspond to specific error conditions that can occur during operation.
 /// </summary> 
 public enum ErrorCodes
