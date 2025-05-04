@@ -74,6 +74,7 @@ public async Task Test4_20()
         Resolver.Log.Info($"---");
         await Task.Delay(1000);
     }
+}
 
 public async Task Test0_10()
 {
@@ -112,6 +113,7 @@ public async Task Test0_10()
         Resolver.Log.Info($"---");
         await Task.Delay(1000);
     }
+}
 
 public async Task TestNtc()
 {
