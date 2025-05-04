@@ -1,6 +1,7 @@
 ﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation;
+using Meadow.Units;
 using System;
 using System.Threading.Tasks;
 
@@ -65,6 +66,7 @@ public class MeadowApp : App<F7CoreComputeV2>
             Resolver.Log.Info($"---");
             await Task.Delay(1000);
         }
+    }
 
     public async Task Test0_10()
     {
@@ -103,6 +105,7 @@ public class MeadowApp : App<F7CoreComputeV2>
             Resolver.Log.Info($"---");
             await Task.Delay(1000);
         }
+    }
 
     public async Task TestNtc()
     {

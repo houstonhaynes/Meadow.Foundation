@@ -25,7 +25,7 @@ public override Task Initialize()
     Resolver.Log.Info("Initialize...");
     var i2CBus = Device.CreateI2cBus(1);
 
-    expander = new Tca95x5(i2CBus);
+    expander = new Tca9535(i2CBus);
 
     return base.Initialize();
 }
