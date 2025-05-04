@@ -2,6 +2,8 @@
 using Meadow.Peripherals.Sensors;
 using Meadow.Peripherals.Sensors.Flow;
 using Meadow.Units;
+using System;
+using System.Threading;
 
 namespace Sensors.Flow.HallEffect.Simulation;
 
