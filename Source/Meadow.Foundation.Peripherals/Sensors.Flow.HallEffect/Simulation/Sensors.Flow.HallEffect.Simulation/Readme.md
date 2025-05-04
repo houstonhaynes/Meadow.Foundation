@@ -1,8 +1,8 @@
-# Meadow.Foundation.ICs.IOExpanders.Tca95x5
+# Meadow.Foundation.Sensors.Flow.HallEffect.Simulation
 
-**Texas Instruments TCA9535 and TCA9555 I2C I/O expander**
+****
 
-The **Tca95x5** library is included in the **Meadow.Foundation.ICs.IOExpanders.Tca95x5** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
+The **** library is included in the **Meadow.Foundation.Sensors.Flow.HallEffect.Simulation** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
 
 This driver is part of the [Meadow.Foundation](https://developer.wildernesslabs.co/Meadow/Meadow.Foundation/) peripherals library, an open-source repository of drivers and libraries that streamline and simplify adding hardware to your C# .NET Meadow IoT applications.
 
@@ -14,45 +14,7 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 
 You can install the library from within Visual studio using the the NuGet Package Manager or from the command line using the .NET CLI:
 
-`dotnet add package Meadow.Foundation.ICs.IOExpanders.Tca95x5`
-## Usage
-
-```csharp
-private Tca95x5 expander;
-
-public override Task Initialize()
-{
-    Resolver.Log.Info("Initialize...");
-    var i2CBus = Device.CreateI2cBus(1);
-
-    expander = new Tca95x5(i2CBus);
-
-    return base.Initialize();
-}
-
-public override async Task Run()
-{
-    var port0 = expander.Pins.P00.CreateDigitalOutputPort();
-    var port1 = expander.Pins.P01.CreateDigitalOutputPort();
-    var port2 = expander.Pins.P02.CreateDigitalOutputPort();
-    var port3 = expander.Pins.P03.CreateDigitalOutputPort();
-
-    bool state = false;
-
-    while (true)
-    {
-        Resolver.Log.Info($"state: {state}");
-        port0.State = state;
-        port1.State = state;
-        port2.State = state;
-        port3.State = state;
-
-        state = !state;
-        await Task.Delay(2000);
-    }
-}
-
-```
+`dotnet add package Meadow.Foundation.Sensors.Flow.HallEffect.Simulation`
 ## How to Contribute
 
 - **Found a bug?** [Report an issue](https://github.com/WildernessLabs/Meadow_Issues/issues)
