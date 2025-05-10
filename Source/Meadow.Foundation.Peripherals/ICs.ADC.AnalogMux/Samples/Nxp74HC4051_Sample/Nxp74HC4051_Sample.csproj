@@ -11,6 +11,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\Meadow.Core\Source\implementations\f7\Meadow.F7\Meadow.F7.csproj" />
-    <ProjectReference Include="..\..\Driver\ICs.IOExpanders.AnalogMux.csproj" />
+    <ProjectReference Include="..\..\Driver\ICs.ADC.AnalogMux.csproj" />
   </ItemGroup>
 </Project>
