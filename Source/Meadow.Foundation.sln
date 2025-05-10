@@ -905,9 +905,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalogMux", "AnalogMux", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{27443DF5-9D37-47E8-A350-4AFD103913CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICs.IOExpanders.AnalogMux", "Meadow.Foundation.Peripherals\ICs.IOExpanders.AnalogMux\Driver\ICs.IOExpanders.AnalogMux.csproj", "{D80EB935-8B49-4D46-8474-F457C5BFB27C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICs.ADC.AnalogMux", "Meadow.Foundation.Peripherals\ICs.ADC.AnalogMux\Driver\ICs.ADC.AnalogMux.csproj", "{D80EB935-8B49-4D46-8474-F457C5BFB27C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nxp74HC4051_Sample", "Meadow.Foundation.Peripherals\ICs.IOExpanders.AnalogMux\Samples\Nxp74HC4051_Sample\Nxp74HC4051_Sample.csproj", "{212208FF-76E1-4864-ADA4-AAC7AE0F2981}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nxp74HC4051_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.AnalogMux\Samples\Nxp74HC4051_Sample\Nxp74HC4051_Sample.csproj", "{212208FF-76E1-4864-ADA4-AAC7AE0F2981}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Audio", "Audio", "{BD86951F-CB52-412C-A765-FA48D704C1DD}"
 EndProject
@@ -1227,23 +1227,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mcp3xxx", "Mcp3xxx", "{C329
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E8FC09F7-3071-4F68-BA50-724A8996B495}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICs.ADC.Mcp3xxx", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Driver\ICs.ADC.Mcp3xxx.csproj", "{B0C6CEE8-E891-4649-ABA1-64CCB9194109}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICs.ADC.Mcp3xxx", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Driver\ICs.ADC.Mcp3xxx.csproj", "{B0C6CEE8-E891-4649-ABA1-64CCB9194109}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3001_Sample", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Samples\Mcp3001_Sample\Mcp3001_Sample.csproj", "{C1F4B5E8-5D7B-43CB-ADDC-72A1B1F52493}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3001_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Samples\Mcp3001_Sample\Mcp3001_Sample.csproj", "{C1F4B5E8-5D7B-43CB-ADDC-72A1B1F52493}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3002_Sample", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Samples\Mcp3002_Sample\Mcp3002_Sample.csproj", "{F67BF1AE-399D-4F66-A858-2DD1FE43F8A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3002_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Samples\Mcp3002_Sample\Mcp3002_Sample.csproj", "{F67BF1AE-399D-4F66-A858-2DD1FE43F8A0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3004_Sample", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Samples\Mcp3004_Sample\Mcp3004_Sample.csproj", "{CA1412BB-77FF-44F7-81C5-3DAE84EEC3B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3004_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Samples\Mcp3004_Sample\Mcp3004_Sample.csproj", "{CA1412BB-77FF-44F7-81C5-3DAE84EEC3B4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3008_Sample", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Samples\Mcp3008_Sample\Mcp3008_Sample.csproj", "{199D7A63-A696-4C0E-98E1-9274C34E3C6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3008_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Samples\Mcp3008_Sample\Mcp3008_Sample.csproj", "{199D7A63-A696-4C0E-98E1-9274C34E3C6D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3201_Sample", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Samples\Mcp3201_Sample\Mcp3201_Sample.csproj", "{C2B299D6-B3BB-4C0E-9051-C3CBBC8D8322}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3201_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Samples\Mcp3201_Sample\Mcp3201_Sample.csproj", "{C2B299D6-B3BB-4C0E-9051-C3CBBC8D8322}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3202_Sample", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Samples\Mcp3202_Sample\Mcp3202_Sample.csproj", "{2D2E4AD5-EE92-4909-8AAB-B50DD0F59A1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3202_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Samples\Mcp3202_Sample\Mcp3202_Sample.csproj", "{2D2E4AD5-EE92-4909-8AAB-B50DD0F59A1D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3204_Sample", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Samples\Mcp3204_Sample\Mcp3204_Sample.csproj", "{0CCC5CFE-20FD-49DF-814F-E7B8C1200109}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3204_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Samples\Mcp3204_Sample\Mcp3204_Sample.csproj", "{0CCC5CFE-20FD-49DF-814F-E7B8C1200109}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3208_Sample", "Meadow.Foundation.Peripherals\ICs.ADCs.Mcp3xxx\Samples\Mcp3208_Sample\Mcp3208_Sample.csproj", "{6731CC68-B1B5-480E-8540-A74D04AF40F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcp3208_Sample", "Meadow.Foundation.Peripherals\ICs.ADC.Mcp3xxx\Samples\Mcp3208_Sample\Mcp3208_Sample.csproj", "{6731CC68-B1B5-480E-8540-A74D04AF40F3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CurrentTransducer", "CurrentTransducer", "{2E5C0DC9-CCA0-4E2D-8A83-639A921AEDB4}"
 EndProject
@@ -1361,7 +1361,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{994D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasScientificGravityDOMeter_Sample", "Meadow.Foundation.Peripherals\Sensors.Environmental.AtlasScientificGravityDOMeter\Samples\AtlasScientificGravityDOMeter_Sample\AtlasScientificGravityDOMeter_Sample.csproj", "{8CE16106-AE01-41AC-BC68-12AA8CBC5EF7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DigiPot", "DigiPot", "{77204A90-B195-4EA4-A17B-CB74E8910FC1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DigiPots", "DigiPots", "{77204A90-B195-4EA4-A17B-CB74E8910FC1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mcp4xxx", "Mcp4xxx", "{CD113034-407F-4FA7-9706-8004406551D2}"
 EndProject
