@@ -213,6 +213,8 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
         i2CCommunications.WriteRegister((byte)Registers.HourAlarm, hourAlarm);
         i2CCommunications.WriteRegister((byte)Registers.DayAlarm, dayAlarm);
         i2CCommunications.WriteRegister((byte)Registers.Weekday_Alarm, weekdayAlarm);
+
+        IsAlarmInterruptEnabled = true;
     }
 
     /// <summary>
