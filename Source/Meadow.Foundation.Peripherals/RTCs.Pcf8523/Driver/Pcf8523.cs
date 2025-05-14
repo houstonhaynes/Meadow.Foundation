@@ -67,7 +67,7 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
             }
             else
             {
-                reg = (byte)(reg | ~(1 << 5));
+                reg = (byte)(reg | (1 << 5));
             }
             i2CCommunications.WriteRegister((byte)Registers.Control_1, reg);
         }
