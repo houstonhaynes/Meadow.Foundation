@@ -101,9 +101,8 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
         }
     }
 
-    private const int OriginYear = 1980;
-    private byte[] txBuffer = new byte[20];
-    private byte[] rxBuffer = new byte[20];
+    private byte[] txBuffer = new byte[16];
+    private byte[] rxBuffer = new byte[16];
 
     private I2cCommunications i2CCommunications;
 
