@@ -5,9 +5,8 @@ using System;
 using System.Threading.Tasks;
 using AU = Meadow.Units.Angle.UnitType;
 using System.Diagnostics;
-using Meadow;
 
-namespace Motors.Stepper.TMC2209
+namespace Meadow.Foundation.Motors.Stepper
 {   
     /// <summary>
     /// Driver for the Trinamic TMC2209 stepper motor controller, supporting both Step/Dir and UART modes
@@ -338,14 +337,34 @@ namespace Motors.Stepper.TMC2209
         public bool CoolStepEnabled { get; private set; }
 
         /// <summary>
-        /// Gets the current motor run current setting (0-31)
+        /// Gets the motor coil inductance (used for optimized StallGuard configuration)
         /// </summary>
-        public int RunCurrent { get; private set; }
+        public Inductance MotorInductance { get; private set; }
 
         /// <summary>
-        /// Gets the current motor hold current setting (0-31)
+        /// Gets the motor coil resistance (used for optimized StallGuard configuration)
         /// </summary>
-        public int HoldCurrent { get; private set; }
+        public Resistance MotorResistance { get; private set; }
+
+        /// <summary>
+        /// Gets the current motor run current setting
+        /// </summary>
+        public Current RunCurrent { get; private set; }
+
+        /// <summary>
+        /// Gets the current motor hold current setting
+        /// </summary>
+        public Current HoldCurrent { get; private set; }
+
+        /// <summary>
+        /// Gets the raw motor run current scale (0-31)
+        /// </summary>
+        public int RunCurrentScale { get; private set; }
+
+        /// <summary>
+        /// Gets the raw motor hold current scale (0-31)
+        /// </summary>
+        public int HoldCurrentScale { get; private set; }
 
         /// <summary>
         /// Indicates if the driver has been disposed
@@ -367,9 +386,10 @@ namespace Motors.Stepper.TMC2209
         private int stallGuardThreshold;
         private int coolStepThreshold;
         private StandstillMode currentStandstillMode;
-        private int standstillDelayTime;
+        private TimeSpan standstillDelay;
         private int standstillHoldPercent;
         private int hybridThresholdSpeed;
+        private Voltage vsenseVoltage = new Voltage(0.325, Voltage.UnitType.Volts); // TMC2209 default vsense
 
         #endregion
 
@@ -384,9 +404,15 @@ namespace Motors.Stepper.TMC2209
         public Tmc2209(IPin step, IPin direction, IPin? enable = null)
         {
             createdPorts = true;
-            stepPort = step.CreateDigitalOutputPort();
-            directionPort = direction.CreateDigitalOutputPort();
-            enablePort = enable?.CreateDigitalOutputPort();
+            
+            // Use the controller to create digital output ports
+            stepPort = step.Controller.CreateDigitalOutputPort(step);
+            directionPort = direction.Controller.CreateDigitalOutputPort(direction);
+            if (enable != null)
+            {
+                enablePort = enable.Controller.CreateDigitalOutputPort(enable);
+            }
+            
             CurrentMode = InterfaceMode.StepDir;
             StepAngle = new Angle(1.8, AU.Degrees);
             CurrentStepDivisor = StepDivisor.Divisor1;
@@ -394,14 +420,23 @@ namespace Motors.Stepper.TMC2209
             MicroPlyerEnabled = false;
             StallGuardEnabled = false;
             CoolStepEnabled = false;
-            RunCurrent = 16;
-            HoldCurrent = 8;
+            
+            // Default current values
+            RunCurrent = new Current(0.8, Current.UnitType.Amps);
+            HoldCurrent = new Current(0.4, Current.UnitType.Amps);
+            RunCurrentScale = 16;
+            HoldCurrentScale = 8;
+            
             stallGuardThreshold = 0;
             coolStepThreshold = 0;
             currentStandstillMode = StandstillMode.Normal;
-            standstillDelayTime = 20;
+            standstillDelay = TimeSpan.FromMilliseconds(20);
             standstillHoldPercent = 50;
             hybridThresholdSpeed = 0;
+            
+            // Default motor parameters - can be set later for more optimized performance
+            MotorInductance = new Inductance(1.5, Inductance.UnitType.Millihenries);
+            MotorResistance = new Resistance(2.8, Resistance.UnitType.Ohms);
         }
 
         /// <summary>
@@ -420,14 +455,24 @@ namespace Motors.Stepper.TMC2209
             MicroPlyerEnabled = false;
             StallGuardEnabled = false;
             CoolStepEnabled = false;
-            RunCurrent = 16;
-            HoldCurrent = 8;
+            
+            // Default current values
+            RunCurrent = new Current(0.8, Current.UnitType.Amps);
+            HoldCurrent = new Current(0.4, Current.UnitType.Amps);
+            RunCurrentScale = 16;
+            HoldCurrentScale = 8;
+            
             stallGuardThreshold = 0;
             coolStepThreshold = 0;
             currentStandstillMode = StandstillMode.Normal;
-            standstillDelayTime = 20;
+            standstillDelay = TimeSpan.FromMilliseconds(20);
             standstillHoldPercent = 50;
             hybridThresholdSpeed = 0;
+            
+            // Default motor parameters - can be set later for more optimized performance
+            MotorInductance = new Inductance(1.5, Inductance.UnitType.Millihenries);
+            MotorResistance = new Resistance(2.8, Resistance.UnitType.Ohms);
+            
             InitializeUartMode().Wait();
         }
 
@@ -438,13 +483,23 @@ namespace Motors.Stepper.TMC2209
         /// <summary>
         /// Rotates the motor by specified degrees
         /// </summary>
+        /// <param name="degrees">Angle to rotate</param>
+        /// <param name="direction">Rotation direction</param>
+        public void Rotate(Angle angle, RotationDirection direction = RotationDirection.Clockwise)
+        {
+            Direction = direction;
+            var steps = (int)(StepsPerRevolution * (angle.Degrees / 360.0));
+            Step(steps);
+        }
+
+        /// <summary>
+        /// Rotates the motor by specified degrees (legacy method)
+        /// </summary>
         /// <param name="degrees">Number of degrees to rotate</param>
         /// <param name="direction">Rotation direction</param>
         public void Rotate(float degrees, RotationDirection direction = RotationDirection.Clockwise)
         {
-            Direction = direction;
-            var steps = (int)(StepsPerRevolution / 360f * degrees);
-            Step(steps);
+            Rotate(new Angle(degrees, AU.Degrees), direction);
         }
 
         /// <summary>
@@ -486,7 +541,7 @@ namespace Motors.Stepper.TMC2209
                 WriteRegisterAsync(Registers.GCONF, enabled ? 0U : 1U).Wait();
             }
         }
-
+        
         #endregion
 
         #region UART Configuration Methods
@@ -532,7 +587,7 @@ namespace Motors.Stepper.TMC2209
                     await ConfigureChopperModeAsync(ChopperMode.StealthChop);
                     await SetMicrosteppingAsync(StepDivisor.Divisor256);
                     await SetMicroPlyerInterpolationAsync(true);
-                    await SetMotorCurrentAsync(16, 8);
+                    await SetMotorCurrentAsync(new Current(0.8, Current.UnitType.Amps), new Current(0.4, Current.UnitType.Amps));
                     await SetAccelerationAsync(100);
                     break;
                     
@@ -540,7 +595,7 @@ namespace Motors.Stepper.TMC2209
                     await ConfigureChopperModeAsync(ChopperMode.StealthChop);
                     await SetMicrosteppingAsync(StepDivisor.Divisor16);
                     await SetMicroPlyerInterpolationAsync(true);
-                    await SetMotorCurrentAsync(24, 16);
+                    await SetMotorCurrentAsync(new Current(1.2, Current.UnitType.Amps), new Current(0.8, Current.UnitType.Amps));
                     await SetAccelerationAsync(200);
                     break;
                     
@@ -548,15 +603,15 @@ namespace Motors.Stepper.TMC2209
                     await ConfigureChopperModeAsync(ChopperMode.SpreadCycle);
                     await SetMicrosteppingAsync(StepDivisor.Divisor8);
                     await SetMicroPlyerInterpolationAsync(true);
-                    await SetMotorCurrentAsync(31, 16);
+                    await SetMotorCurrentAsync(new Current(1.5, Current.UnitType.Amps), new Current(0.8, Current.UnitType.Amps));
                     await SetAccelerationAsync(400);
                     break;
                     
                 case MotionProfile.LowPower:
                     await ConfigureChopperModeAsync(ChopperMode.StealthChop);
                     await SetMicrosteppingAsync(StepDivisor.Divisor32);
-                    await ConfigureStandstillPowerAsync(true, 500, 20);
-                    await SetMotorCurrentAsync(16, 4);
+                    await ConfigureStandstillPowerAsync(true, TimeSpan.FromMilliseconds(500), 20);
+                    await SetMotorCurrentAsync(new Current(0.7, Current.UnitType.Amps), new Current(0.2, Current.UnitType.Amps));
                     await SetAccelerationAsync(100);
                     await ConfigureCoolStepAsync(true, 5, 20);
                     break;
@@ -670,14 +725,28 @@ namespace Motors.Stepper.TMC2209
         }
         
         /// <summary>
-        /// Sets the motor current levels
+        /// Configures hybrid chopper mode with rotational speed threshold
         /// </summary>
-        /// <param name="runCurrent">Current when motor is moving (0-31)</param>
-        /// <param name="holdCurrent">Current when motor is stationary (0-31)</param>
-        /// <param name="holdDelay">Delay in clock cycles before reducing to hold current (0-15)</param>
+        /// <param name="thresholdSpeed">Angular velocity threshold for switching between modes</param>
         /// <exception cref="InvalidOperationException">Thrown when not in UART mode</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when current values are out of valid range</exception>
-        public async Task SetMotorCurrentAsync(int runCurrent, int holdCurrent, int holdDelay = 4)
+        public async Task ConfigureHybridChopperModeAsync(AngularVelocity thresholdSpeed)
+        {
+            if (IsDisposed) { throw new ObjectDisposedException(nameof(Tmc2209)); }
+            
+            // Convert RPM to steps/second
+            double stepsPerSecond = thresholdSpeed.RevolutionsPerMinute * StepsPerRevolution / 60.0;
+            
+            await ConfigureHybridChopperModeAsync((int)stepsPerSecond);
+        }
+        
+        /// <summary>
+        /// Sets the motor current levels using physical current values
+        /// </summary>
+        /// <param name="runCurrent">Current when motor is moving</param>
+        /// <param name="holdCurrent">Current when motor is stationary</param>
+        /// <param name="holdDelay">Delay before reducing to hold current</param>
+        /// <exception cref="InvalidOperationException">Thrown when not in UART mode</exception>
+        public async Task SetMotorCurrentAsync(Current runCurrent, Current holdCurrent, TimeSpan? holdDelay = null)
         {
             if (IsDisposed) { throw new ObjectDisposedException(nameof(Tmc2209)); }
             if (CurrentMode != InterfaceMode.Uart)
@@ -685,27 +754,77 @@ namespace Motors.Stepper.TMC2209
                 throw new InvalidOperationException("Motor current configuration requires UART mode");
             }
             
-            if (runCurrent < 0 || runCurrent > 31)
-            {
-                throw new ArgumentOutOfRangeException(nameof(runCurrent), "Run current must be between 0 and 31");
-            }
-            
-            if (holdCurrent < 0 || holdCurrent > 31)
-            {
-                throw new ArgumentOutOfRangeException(nameof(holdCurrent), "Hold current must be between 0 and 31");
-            }
-            
-            if (holdDelay < 0 || holdDelay > 15)
-            {
-                throw new ArgumentOutOfRangeException(nameof(holdDelay), "Hold delay must be between 0 and 15");
-            }
-
-            // IHOLD_IRUN register: IHOLD(4:0), IRUN(12:8), IHOLDDELAY(19:16)
-            uint ihold_irun = (uint)holdCurrent | ((uint)runCurrent << 8) | ((uint)holdDelay << 16);
-            await WriteRegisterAsync(Registers.IHOLD_IRUN, ihold_irun);
-            
+            // Store the current values for reference
             RunCurrent = runCurrent;
             HoldCurrent = holdCurrent;
+            
+            // Convert to TMC2209 current scale (0-31)
+            // Scale factor depends on vsense setting and sense resistor
+            // Assuming vsense = 0.325V (high current mode) and rsense = 0.11 ohm (typical)
+            int runScale = CurrentToScale(runCurrent);
+            int holdScale = CurrentToScale(holdCurrent);
+            
+            // Use standard holdDelay if not specified
+            var delayTimeMs = holdDelay ?? standstillDelay;
+            
+            // Set register values
+            await SetMotorCurrentScaleAsync(runScale, holdScale, delayTimeMs);
+        }
+        
+        /// <summary>
+        /// Sets the motor current levels using scaling factors
+        /// </summary>
+        /// <param name="runCurrentScale">Current scale when motor is moving (0-31)</param>
+        /// <param name="holdCurrentScale">Current scale when motor is stationary (0-31)</param>
+        /// <param name="holdDelay">Delay before reducing to hold current</param>
+        /// <exception cref="InvalidOperationException">Thrown when not in UART mode</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when current values are out of valid range</exception>
+        public async Task SetMotorCurrentScaleAsync(int runCurrentScale, int holdCurrentScale, TimeSpan holdDelay)
+        {
+            if (IsDisposed) { throw new ObjectDisposedException(nameof(Tmc2209)); }
+            if (CurrentMode != InterfaceMode.Uart)
+            {
+                throw new InvalidOperationException("Motor current configuration requires UART mode");
+            }
+            
+            if (runCurrentScale < 0 || runCurrentScale > 31)
+            {
+                throw new ArgumentOutOfRangeException(nameof(runCurrentScale), "Run current must be between 0 and 31");
+            }
+            
+            if (holdCurrentScale < 0 || holdCurrentScale > 31)
+            {
+                throw new ArgumentOutOfRangeException(nameof(holdCurrentScale), "Hold current must be between 0 and 31");
+            }
+            
+            // Calculate appropriate IHOLDDELAY value (0-15)
+            // TPOWERDOWN is in units of 2^18 clock cycles (approx. 21.8ms at 12MHz)
+            int holdDelayValue = (int)(holdDelay.TotalMilliseconds * 12000 / 262144);
+            holdDelayValue = Math.Clamp(holdDelayValue, 0, 15);
+
+            // IHOLD_IRUN register: IHOLD(4:0), IRUN(12:8), IHOLDDELAY(19:16)
+            uint ihold_irun = (uint)holdCurrentScale | ((uint)runCurrentScale << 8) | ((uint)holdDelayValue << 16);
+            await WriteRegisterAsync(Registers.IHOLD_IRUN, ihold_irun);
+            
+            // Store the values for reference
+            RunCurrentScale = runCurrentScale;
+            HoldCurrentScale = holdCurrentScale;
+            standstillDelay = holdDelay;
+            
+            // Calculate and update actual current values based on scale
+            RunCurrent = ScaleToCurrent(runCurrentScale);
+            HoldCurrent = ScaleToCurrent(holdCurrentScale);
+        }
+        
+        /// <summary>
+        /// Sets the motor current levels using scaling factors with millisecond delay
+        /// </summary>
+        /// <param name="runCurrentScale">Current scale when motor is moving (0-31)</param>
+        /// <param name="holdCurrentScale">Current scale when motor is stationary (0-31)</param>
+        /// <param name="holdDelayMs">Delay in milliseconds before reducing to hold current</param>
+        public async Task SetMotorCurrentScaleAsync(int runCurrentScale, int holdCurrentScale, int holdDelayMs = 20)
+        {
+            await SetMotorCurrentScaleAsync(runCurrentScale, holdCurrentScale, TimeSpan.FromMilliseconds(holdDelayMs));
         }
 
         /// <summary>
@@ -723,6 +842,21 @@ namespace Motors.Stepper.TMC2209
 
             await WriteRegisterAsync(Registers.VACTUAL, (uint)velocity);
             CurrentVelocity = velocity;
+        }
+        
+        /// <summary>
+        /// Sets the rotational speed of the motor
+        /// </summary>
+        /// <param name="angularVelocity">Angular velocity</param>
+        /// <exception cref="InvalidOperationException">Thrown when not in UART mode</exception>
+        public async Task SetRotationalSpeedAsync(AngularVelocity angularVelocity)
+        {
+            if (IsDisposed) { throw new ObjectDisposedException(nameof(Tmc2209)); }
+            
+            // Convert RPM to steps/second
+            double stepsPerSecond = angularVelocity.RevolutionsPerMinute * StepsPerRevolution / 60.0;
+            
+            await SetVelocityAsync((int)stepsPerSecond);
         }
         
         /// <summary>
@@ -771,11 +905,11 @@ namespace Motors.Stepper.TMC2209
         /// Configures automatic standstill power reduction settings
         /// </summary>
         /// <param name="enabled">Enable power reduction</param>
-        /// <param name="delayTime">Delay time in milliseconds before reducing current (1-5000)</param>
+        /// <param name="delayTime">Delay time before reducing current</param>
         /// <param name="holdPercent">Percentage of run current to use during standstill (0-100)</param>
         /// <param name="mode">Standstill mode for power management</param>
         /// <exception cref="InvalidOperationException">Thrown when not in UART mode</exception>
-        public async Task ConfigureStandstillPowerAsync(bool enabled, int delayTime, int holdPercent, StandstillMode mode = StandstillMode.ReducedCurrent)
+        public async Task ConfigureStandstillPowerAsync(bool enabled, TimeSpan delayTime, int holdPercent, StandstillMode mode = StandstillMode.ReducedCurrent)
         {
             if (IsDisposed) { throw new ObjectDisposedException(nameof(Tmc2209)); }
             if (CurrentMode != InterfaceMode.Uart)
@@ -784,28 +918,23 @@ namespace Motors.Stepper.TMC2209
             }
             
             // Validate input parameters
-            delayTime = Math.Clamp(delayTime, 1, 5000);
+            delayTime = TimeSpan.FromMilliseconds(Math.Clamp(delayTime.TotalMilliseconds, 1, 5000));
             holdPercent = Math.Clamp(holdPercent, 0, 100);
             
             // Convert delay time to clock cycles (assuming 12MHz clock)
-            // TPOWERDOWN is in units of 2^18 clock cycles (approx. 21.8 ms per unit at 12MHz)
-            uint tpowerdown = (uint)(delayTime * 12000 / 262144); // 2^18 = 262144
+            // TPOWERDOWN is in units of 2^18 clock cycles (approx. 21.8ms per unit at 12MHz)
+            uint tpowerdown = (uint)(delayTime.TotalMilliseconds * 12000 / 262144); // 2^18 = 262144
             tpowerdown = Math.Max(1, tpowerdown);
             
             // Set TPOWERDOWN register
             await WriteRegisterAsync(Registers.TPOWERDOWN, tpowerdown);
             
-            // Get current RUN current
-            uint ihold_irun = await ReadRegisterAsync(Registers.IHOLD_IRUN);
-            uint irun = (ihold_irun >> 8) & 0x1F;
+            // Get current run current scale
+            int newHoldScale = (RunCurrentScale * holdPercent) / 100;
+            newHoldScale = Math.Clamp(newHoldScale, 0, 31);
             
-            // Calculate HOLD current based on percentage
-            uint ihold = (uint)((irun * holdPercent) / 100);
-            ihold = Math.Clamp(ihold, 0, 31);
-            
-            // Update IHOLD_IRUN register with new IHOLD value and keep other bits
-            ihold_irun = (ihold_irun & ~0x1FU) | ihold;
-            await WriteRegisterAsync(Registers.IHOLD_IRUN, ihold_irun);
+            // Update current settings with the new hold current
+            await SetMotorCurrentScaleAsync(RunCurrentScale, newHoldScale, delayTime);
             
             // Configure standstill mode in PWMCONF register
             if (mode != StandstillMode.Normal)
@@ -842,8 +971,20 @@ namespace Motors.Stepper.TMC2209
             await WriteRegisterAsync(Registers.GCONF, gconf);
             
             currentStandstillMode = mode;
-            standstillDelayTime = delayTime;
+            standstillDelay = delayTime;
             standstillHoldPercent = holdPercent;
+        }
+        
+        /// <summary>
+        /// Configures automatic standstill power reduction settings with millisecond delay
+        /// </summary>
+        /// <param name="enabled">Enable power reduction</param>
+        /// <param name="delayTimeMs">Delay time in milliseconds before reducing current</param>
+        /// <param name="holdPercent">Percentage of run current to use during standstill (0-100)</param>
+        /// <param name="mode">Standstill mode for power management</param>
+        public async Task ConfigureStandstillPowerAsync(bool enabled, int delayTimeMs, int holdPercent, StandstillMode mode = StandstillMode.ReducedCurrent)
+        {
+            await ConfigureStandstillPowerAsync(enabled, TimeSpan.FromMilliseconds(delayTimeMs), holdPercent, mode);
         }
 
         #endregion
@@ -914,6 +1055,32 @@ namespace Motors.Stepper.TMC2209
             
             StallGuardEnabled = enabled;
             stallGuardThreshold = threshold;
+        }
+        
+        /// <summary>
+        /// Configures StallGuard4 with motor parameters for optimal sensitivity
+        /// </summary>
+        /// <param name="enabled">Enable or disable StallGuard</param>
+        /// <param name="motorInductance">Motor coil inductance</param>
+        /// <param name="motorCurrent">Motor operating current</param>
+        /// <param name="stopOnStall">Whether to stop motor when stall is detected</param>
+        /// <exception cref="InvalidOperationException">Thrown when not in UART mode</exception>
+        public async Task ConfigureStallGuardWithMotorParamsAsync(bool enabled, Inductance motorInductance, Current motorCurrent, bool stopOnStall = true)
+        {
+            if (IsDisposed) { throw new ObjectDisposedException(nameof(Tmc2209)); }
+            if (CurrentMode != InterfaceMode.Uart)
+            {
+                throw new InvalidOperationException("StallGuard configuration requires UART mode");
+            }
+            
+            // Store the motor parameters
+            MotorInductance = motorInductance;
+            
+            // Calculate optimal threshold based on motor parameters
+            int threshold = CalculateStallGuardThreshold(motorInductance, motorCurrent);
+            
+            // Apply the configuration
+            await ConfigureStallGuardAsync(enabled, threshold, stopOnStall);
         }
         
         /// <summary>
@@ -1047,7 +1214,7 @@ namespace Motors.Stepper.TMC2209
             await WriteRegisterAsync(Registers.COOLCONF, coolconf);
             
             CoolStepEnabled = enabled;
-            coolStepThreshold = lowerThreshold;
+            this.coolStepThreshold = lowerThreshold;
         }
         
         /// <summary>
@@ -1102,6 +1269,80 @@ namespace Motors.Stepper.TMC2209
         }
         
         /// <summary>
+        /// Sets the motor's electrical parameters for optimized performance
+        /// </summary>
+        /// <param name="inductance">Motor coil inductance</param>
+        /// <param name="resistance">Motor coil resistance</param>
+        /// <param name="maxCurrent">Maximum motor current rating</param>
+        /// <exception cref="InvalidOperationException">Thrown when not in UART mode</exception>
+        public async Task SetMotorParametersAsync(Inductance inductance, Resistance resistance, Current maxCurrent)
+        {
+            if (IsDisposed) { throw new ObjectDisposedException(nameof(Tmc2209)); }
+            if (CurrentMode != InterfaceMode.Uart)
+            {
+                throw new InvalidOperationException("Motor parameter configuration requires UART mode");
+            }
+            
+            // Store the motor parameters
+            MotorInductance = inductance;
+            MotorResistance = resistance;
+            
+            // Calculate optimal settings based on the motor parameters
+            
+            // Calculate L/R time constant in microseconds
+            double lrTimeConstant = inductance.Microhenries / resistance.Ohms;
+            
+            // Choose appropriate chopper mode based on inductance
+            // Low inductance motors work better in SpreadCycle
+            // High inductance motors work better in StealthChop
+            ChopperMode recommendedMode = inductance.Millihenries < 2.0 
+                ? ChopperMode.SpreadCycle 
+                : ChopperMode.StealthChop;
+            
+            // Configure current based on motor rating, but limit to TMC2209 capability
+            Current runCurrent = maxCurrent * 0.8; // 80% of max for safety
+            Current holdCurrent = maxCurrent * 0.5; // 50% for holding
+            
+            // Apply settings
+            await ConfigureChopperModeAsync(recommendedMode);
+            await SetMotorCurrentAsync(runCurrent, holdCurrent);
+            
+            // Configure other parameters based on motor characteristics
+            
+            // Chopper timing based on L/R time constant
+            uint chopconf = await ReadRegisterAsync(Registers.CHOPCONF);
+            
+            // Set TBL (blank time) based on inductance
+            chopconf &= ~RegFields.TBL_MASK;
+            if (inductance.Millihenries < 1.0)
+            {
+                chopconf |= 1 << 15; // TBL = 1, shorter blank time for low inductance
+            }
+            else
+            {
+                chopconf |= 2 << 15; // TBL = 2, longer blank time for higher inductance
+            }
+            
+            await WriteRegisterAsync(Registers.CHOPCONF, chopconf);
+            
+            // Configure VSENSE based on current range
+            if (maxCurrent.Amps > 1.5)
+            {
+                // High current mode (VSENSE = 0.325V)
+                chopconf &= ~RegFields.VSENSE;
+                vsenseVoltage = new Voltage(0.325, Voltage.UnitType.Volts);
+            }
+            else
+            {
+                // Low current mode (VSENSE = 0.18V)
+                chopconf |= RegFields.VSENSE;
+                vsenseVoltage = new Voltage(0.18, Voltage.UnitType.Volts);
+            }
+            
+            await WriteRegisterAsync(Registers.CHOPCONF, chopconf);
+        }
+        
+        /// <summary>
         /// Gets detailed diagnostic information about the driver's current state
         /// </summary>
         /// <returns>Detailed driver diagnostics including temperature, load, and errors</returns>
@@ -1142,10 +1383,75 @@ namespace Motors.Stepper.TMC2209
                 // Reset status bits
                 ResetFlag = (gstat & 0x01) != 0,
                 DriverErrorFlag = (gstat & 0x02) != 0,
-                ChargePumpUnderVoltageFlag = (gstat & 0x04) != 0
+                ChargePumpUnderVoltageFlag = (gstat & 0x04) != 0,
+                
+                // Measured physical values
+                MeasuredCurrent = ScaleToCurrent((int)((drvStatus & RegFields.CS_ACTUAL_MASK) >> 16)),
+                RunCurrentSetting = RunCurrent,
+                HoldCurrentSetting = HoldCurrent,
+                MotorParametersSet = (MotorInductance.Millihenries > 0 && MotorResistance.Ohms > 0)
             };
             
             return diagnostics;
+        }
+
+        #endregion
+
+        #region Helper Methods
+        
+        /// <summary>
+        /// Converts a physical current value to TMC2209 scale factor (0-31)
+        /// </summary>
+        protected int CurrentToScale(Current current)
+        {
+            // TMC2209 current scale depends on VSENSE setting and sense resistor
+            // Assuming vsense and rsense are known values
+            double maxCurrentRms = vsenseVoltage.Volts / (0.11 * 0.707); // Typical Rsense = 0.11Ω
+            
+            // Calculate the scale (0-31)
+            int scale = (int)Math.Round(current.Amps * 31.0 / maxCurrentRms);
+            
+            // Clamp to valid range
+            return Math.Clamp(scale, 0, 31);
+        }
+        
+        /// <summary>
+        /// Converts a TMC2209 scale factor to physical current
+        /// </summary>
+        protected Current ScaleToCurrent(int currentScale)
+        {
+            // TMC2209 current scale depends on VSENSE setting and sense resistor
+            // Assuming vsense and rsense are known values
+            double maxCurrentRms = vsenseVoltage.Volts / (0.11 * 0.707); // Typical Rsense = 0.11Ω
+            
+            // Calculate the current
+            double amps = maxCurrentRms * currentScale / 31.0;
+            
+            return new Current(amps, Current.UnitType.Amps);
+        }
+        
+        /// <summary>
+        /// Calculates the optimal StallGuard threshold based on motor parameters
+        /// </summary>
+        protected int CalculateStallGuardThreshold(Inductance inductance, Current current)
+        {
+            // This is a simplified version - actual calculations might need to be more complex
+            // and may vary based on motor characteristics
+            
+            // The L/R time constant affects the stall detection sensitivity
+            // Lower inductance motors need more sensitive thresholds
+            double lrRatio = inductance.Millihenries / (MotorResistance.Ohms);
+            
+            // 10 is a reasonable midpoint for the threshold
+            // Adjust based on L/R ratio, which affects motor electrical behavior
+            int baseThreshold = 10;
+            
+            // Adjust threshold based on L/R time constant
+            // Lower L/R (faster electrical response) = more negative threshold (more sensitive)
+            int adjustment = (int)(lrRatio * 20);
+            
+            // Clamp to valid range for SGT (-64 to 63)
+            return Math.Clamp(baseThreshold - adjustment, -64, 63);
         }
 
         #endregion
@@ -1335,7 +1641,7 @@ namespace Motors.Stepper.TMC2209
             // - IRUN=16: Run current (default)
             // - IHOLD=8: Hold current (half of run current)
             // - IHOLDDELAY=4: Delay before reducing current
-            await SetMotorCurrentAsync(RunCurrent, HoldCurrent, 4);
+            await SetMotorCurrentScaleAsync(RunCurrentScale, HoldCurrentScale, 4);
             
             // 5. Set power down delay - TPOWERDOWN
             await WriteRegisterAsync(Registers.TPOWERDOWN, 10); // ~218ms delay
@@ -1547,22 +1853,41 @@ namespace Motors.Stepper.TMC2209
         public bool ChargePumpUnderVoltageFlag { get; internal set; }
         
         /// <summary>
+        /// Actual measured motor current
+        /// </summary>
+        public Current MeasuredCurrent { get; internal set; }
+        
+        /// <summary>
+        /// Current run current setting
+        /// </summary>
+        public Current RunCurrentSetting { get; internal set; }
+        
+        /// <summary>
+        /// Current hold current setting
+        /// </summary>
+        public Current HoldCurrentSetting { get; internal set; }
+        
+        /// <summary>
+        /// Indicates whether motor parameters have been set
+        /// </summary>
+        public bool MotorParametersSet { get; internal set; }
+        
+        /// <summary>
         /// Returns a formatted string with diagnostic information
         /// </summary>
         public override string ToString()
         {
             return $"TMC2209 Diagnostics:\n" +
+                   $"Motor Current: {MeasuredCurrent.Amps:F2}A / {RunCurrentSetting.Amps:F2}A max\n" +
                    $"StallGuard Value: {StallGuardValue}\n" +
+                   $"Measured Speed: {MeasuredSpeed} steps/s\n" +
                    $"Temperature Warning: {OvertemperatureWarning}\n" + 
                    $"Temperature Shutdown: {OvertemperatureShutdown}\n" +
                    $"Short To Ground: {ShortToGround}\n" +
                    $"Open Load: {OpenLoad}\n" +
-                   $"Current Velocity: {CurrentVelocity} steps/s\n" +
-                   $"Measured Speed: {MeasuredSpeed} steps/s\n" +
                    $"Chopper Mode: {CurrentChopperMode}\n" +
                    $"StealthChop Active: {StealthChopMode}\n" +
                    $"Standstill Detected: {StandstillDetected}\n" +
-                   $"Actual Motor Current: {ActualMotorCurrent}\n" +
                    $"Micro Step Position: {MicroStepPosition}\n" +
                    $"Reset Flag: {ResetFlag}\n" +
                    $"Driver Error: {DriverErrorFlag}";
