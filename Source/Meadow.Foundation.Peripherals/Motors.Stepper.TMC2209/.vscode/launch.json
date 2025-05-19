@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "COM4",
+            "type": "meadow",
+            "request": "launch",
+            "preLaunchTask": "meadow: Build",
+            "deviceInfo": {
+                "name": "COM4",
+                "serial": "COM4"
+            }
+        }
+    ]
+}
